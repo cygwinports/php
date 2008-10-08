@@ -1,0 +1,7 @@
+category: PHP
+requires: cygwin php libmysqlclient15
+external-source: php
+sdesc: "PHP Hypertext Preprocessor (pdo_mysql extension)"
+ldesc: "PHP (recursive acronym for 'PHP: Hypertext Preprocessor') is a
+widely-used Open Source general-purpose scripting language that is
+especially suited for Web development and can be embedded into HTML."

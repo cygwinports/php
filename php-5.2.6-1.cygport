@@ -1,0 +1,313 @@
+DESCRIPTION="PHP Hyptertext Preprocessor"
+HOMEPAGE="http://www.php.net/"
+SRC_URI="http://www.php.net/distributions/${P}.tar.bz2"
+
+DIFF_EXCLUDES="aclocal.m4 libtool.m4 php_config.h.in tests"
+
+# EXTENSIONS:
+#
+# {pdo_,}pgsql don't work; even --export-dynamic does not help
+#
+# $ grep -h 'ADD_EXTENSION_DEP(' ${S}/ext/*/config.m4 | sed -e 's@^ *@# @g'
+# The following modules are deps for others, and hence must be builtin:
+# date, dom, filter, libxml, pcre, pdo, spl, xml
+#
+# Debian builds shared only those modules with additional deps, or
+# those with builtin external libraries, namely:
+# curl, gd, gmp, imap, interbase, ldap, mcrypt, mhash, mysql, odbc,
+# pgsql, pspell, recode, snmp, sqlite, sybase, tidy, xmlrpc, xsl
+
+# location of php.ini files
+inidir=/etc/php${PV_MAJ}
+
+# required for all configure runs
+common_args="
+  --sysconfdir=${inidir}
+
+  --disable-static
+  --disable-ipv6
+  --disable-rpath
+  --with-config-file-path=${inidir}
+  --with-config-file-scan-dir=${inidir}/conf.d
+  --with-layout=GNU
+  --with-regex=system
+
+  --enable-dom=yes
+  --enable-libxml=yes
+  --enable-pdo=yes
+  --enable-simplexml=yes
+  --enable-spl=yes
+  --enable-xml=yes
+  --with-libxml-dir=/usr
+  --with-pcre-dir=/usr
+"
+
+cli_args="
+  --enable-cgi
+  --enable-discard-path
+  --enable-fastcgi
+  --enable-force-cgi-redirect
+  --with-pear
+
+  --enable-bcmath=shared
+  --with-bz2=shared
+  --enable-calendar=shared
+  --enable-ctype=shared
+  --with-curl=shared,/usr
+  --enable-dba=shared
+  --with-gdbm=/usr
+  --with-ndbm=/usr
+  --with-db4=/usr
+  --with-dbm=/usr
+  --with-cdb
+  --enable-inifile
+  --enable-flatfile
+  --enable-dbase=shared
+  --enable-exif=shared
+  --with-fbsql=no
+  --with-fdftk=no
+  --enable-filter=yes
+  --enable-ftp=shared
+  --with-openssl-dir=/usr
+  --with-gd=shared,/usr
+  --with-jpeg-dir=/usr
+  --with-png-dir=/usr
+  --with-zlib-dir=/usr
+  --with-xpm-dir=/usr
+  --with-ttf=no
+  --with-freetype-dir=/usr
+  --with-t1lib=/usr
+  --with-gettext=shared,/usr
+  --with-gmp=shared,/usr
+  --enable-hash=shared
+  --with-iconv=shared,/usr
+  --with-imap=no
+  --with-kerberos=no
+  --with-imap-ssl=no
+  --with-interbase=no
+  --enable-json=shared
+  --with-ldap=shared,/usr
+  --with-ldap-sasl=/usr
+  --enable-mbstring=shared
+  --enable-mbregex=yes
+  --enable-mbregex_backtrack=yes
+  --with-libmbfl=/usr
+  --with-mcrypt=shared,/usr
+  --with-mhash=shared,/usr
+  --with-mime-magic=shared,/usr/share/file/magic.mime
+  --with-ming=shared,/usr
+  --with-msql=no
+  --with-mssql=shared,/usr
+  --with-mysql=shared,/usr
+  --with-mysqli=shared
+  --enable-embedded_mysqli=no
+  --with-ncurses=shared,/usr
+  --with-openssl=shared,/usr
+  --with-oci8=no
+  --with-adabas=no
+  --with-sapdb=no
+  --with-solid=no
+  --with-ibm-db2=no
+  --with-ODBCRouter=no
+  --with-empress=no
+  --with-empress-bcs=no
+  --with-birdstep=no
+  --with-custom-odbc=no
+  --with-iodbc=no
+  --with-esoob=no
+  --with-unixODBC=no
+  --with-dbmaker=no
+  --with-msodbc=shared,/usr
+  --enable-pcntl=no
+  --with-pcre-regex=/usr
+  --with-pdo-dblib=shared,/usr
+  --with-pdo-firebird=no
+  --with-pdo-mysql=shared,/usr
+  --with-pdo-oci=no
+  --with-pdo-odbc=shared,odbc32
+  --with-pdo-pgsql=no
+  --with-pdo-sqlite=shared,/usr
+  --with-pgsql=no
+  --enable-posix=shared
+  --with-pspell=shared,/usr
+  --with-libedit=no
+  --with-readline=shared,/usr
+  --with-recode=shared,/usr
+  --enable-session=shared
+  --with-mm=no
+  --enable-shmop=shared
+  --with-snmp=no
+  --enable-ucd-snmp-hack=no
+  --enable-soap=shared,/usr
+  --enable-sockets=shared,/usr
+  --with-sqlite=shared,/usr
+  --enable-sqlite-utf8=no
+  --with-sybase=shared,/usr
+  --with-sybase-ct=no
+  --enable-sysvmsg=shared,/usr
+  --enable-sysvsem=shared,/usr
+  --enable-sysvshm=shared,/usr
+  --with-tidy=shared,/usr
+  --enable-tokenizer=shared,/usr
+  --enable-wddx=shared
+  --enable-xmlreader=shared,/usr
+  --with-xmlrpc=shared,/usr
+  --with-iconv-dir=/usr
+  --enable-xmlwriter=shared,/usr
+  --with-xsl=shared,/usr
+  --enable-zip=shared,/usr
+  --with-zlib=shared,/usr
+"
+
+# packaging
+#
+PKG_NAMES="${PN} ${PN}-pear apache-mod_php${PV_MAJ} apache2-mod_php${PV_MAJ}"
+PKG_HINTS="${PN} pear apache apache2"
+PKG_CONTENTS[0]="${inidir#/}/conf.d/.keep* usr/bin/*.dll usr/bin/php*
+                 usr/include/ usr/lib/lib* usr/lib/php/build/ usr/share/doc/ usr/share/man/"
+PKG_CONTENTS[1]="${inidir#/}/pear.conf usr/bin/pe* usr/share/pear/"
+PKG_CONTENTS[2]='usr/lib/apache/'
+PKG_CONTENTS[3]='usr/lib/apache2/'
+n=4
+
+# This method provides 50+ modules, so better automate this:
+for ext in $(echo ${cli_args} | sed -e 's# #\n#g' | grep shared \
+             | sed -e 's#^--[a-z]*-##g' -e 's#=.*##g' -e 's#-#_#g' -e 's#msodbc#odbc#')
+do
+	PKG_NAMES+=" php-${ext}"
+	PKG_HINTS+=" ${ext}"
+	PKG_CONTENTS[$((n++))]="${inidir#/}/conf.d/${ext}.ini usr/lib/php/*/${ext}.dll"
+done
+
+unset ext n
+
+src_compile() {
+	cd ${S}
+
+	## libtoolize
+	local lt_m4
+	local lt_macros="libtool.m4"
+	local lt_v=$(libtoolize --version | head -n 1 | cut -d ' ' -f 4)
+
+	case ${lt_v} in
+	1.5.*)	;;
+	2.2.*) 	lt_macros+=" ltoptions.m4 ltsugar.m4 ltversion.m4 lt~obsolete.m4" ;;
+	*)		error "php: unsupported libtool version: ${lt_v}" ;;
+	esac
+
+	libtoolize --force || error "libtoolize failed"  # ltmain.sh
+
+	rm -f build/libtool.m4
+	for lt_m4 in ${lt_macros}
+	do
+		cat /usr/share/aclocal/${lt_m4} >> build/libtool.m4
+	done
+
+	cygmake -j1 -B -f build/build.mk ZENDDIR="Zend"
+
+	## build CLI and CGI
+	mkdir -p ${B}/cgi
+	cd ${B}/cgi
+	CYGCONF_SOURCE="${S}" cygconf ${common_args} ${cli_args}
+
+	sed -e '/^build_old_libs/ s/=yes/=no/g' \
+		-e '/^LTCFLAGS=/d' \
+		-i libtool
+
+	mkdir -p cygwin
+	mkdir -p ext/sqlite/libsqlite/src
+
+	# first make the common sources library
+	cygmake cygwin/libphp${PV_MAJ}lib.la
+	sed -e 's#link=yes#link=no#' -i cygwin/libphp${PV_MAJ}lib.la
+
+	# then make everything else
+	cygmake
+
+	# Apache (1.x) mod_php5 SAPI
+	mkdir -p ${B}/apache
+	cd ${B}/apache
+
+	CYGCONF_SOURCE="${S}" cygconf \
+		--disable-all --disable-cli --with-apxs=/usr/sbin/apxs ${common_args}
+
+	# the -a flag adds the module to httpd.conf
+	sed -e 's#-prefer-non-pic -static##g' \
+		-e 's#-prefer-pic##g' \
+		-e 's#-i -a -n#-i -n#g' \
+		-i Makefile
+
+	cygmake libphp${PV_MAJ}.la \
+		PHP_GLOBAL_OBJS='' \
+		ZEND_EXTRA_LIBS="-Wl,${B}/cgi/cygwin/.libs/libphp${PV_MAJ}lib.dll.a"
+
+	# Makefile expects this to be named libphp5.dll
+	mv libs/{cyg,lib}php${PV_MAJ}.dll
+
+	# Apache2 mod_php5 SAPI
+	mkdir -p ${B}/apache2
+	cd ${B}/apache2
+
+	CYGCONF_SOURCE="${S}" cygconf \
+		--disable-all --disable-cli --with-apxs2=/usr/sbin/apxs2 ${common_args}
+
+	# the -a flag adds the module to httpd.conf
+	sed -e 's#-prefer-non-pic -static##g' \
+		-e 's#-prefer-pic##g' \
+		-e 's#-i -a -n#-i -n#g' \
+		-i Makefile
+
+	# Apache2 expects mods to have .so suffix on all platforms
+	cygmake libphp${PV_MAJ}.la \
+		PHP_GLOBAL_OBJS='' \
+		ZEND_EXTRA_LIBS="-Wl,${B}/cgi/cygwin/.libs/libphp${PV_MAJ}lib.dll.a"
+}
+
+src_test() {
+	export PATH="${B}/cgi/cygwin/.libs:$PATH"
+
+	cd ${B}/cgi
+	cygmake -j1 test
+}
+
+src_install() {
+	local n sapi x xdir
+
+	# install the Apache SAPIs
+	for sapi in apache apache2
+	do
+		cd ${B}/${sapi}
+		cygmake -j1 install-sapi INSTALL_ROOT=${D} PHP_GLOBAL_OBJS=''
+	done
+
+	# install CLI, CGI, PEAR, build environment, and everything else
+	cd ${B}/cgi
+	cygmake -j1 install INSTALL_ROOT=${D}
+
+	# install the real executables, not the libtool stubs
+	dobin sapi/cli/.libs/php.exe sapi/cgi/.libs/php-cgi.exe
+
+	# install the shared lib
+	dobin cygwin/.libs/cygphp${PV_MAJ}lib.dll
+	dolib cygwin/.libs/libphp${PV_MAJ}lib.dll.a
+
+	# fix PEAR for Cygwin
+	(cd ${D}/usr/share/pear && patch -p0 < ${C}/PEAR-cygwin.patch)
+
+	# sanitize php-config
+	sed -e 's#^libs=.*#libs="-lcrypt -lpcre -lresolv -lxml2"#' \
+		-e 's#^php_sapis=.*#php_sapis="cli cgi apache apache2handler"#' \
+		-i ${D}/usr/bin/php-config
+
+	# add .ini files for each extension, so that it's loaded once installed
+	xdir=$(${D}/usr/bin/php-config --extension-dir)
+	rm ${D}${xdir}/cygphp${PV_MAJ}lib.dll
+
+	keepdir ${inidir}/conf.d
+
+	for x in ${D}${xdir}/*.dll
+	do
+		n=${x##*/}
+		echo "extension = ${n}" > ${D}${inidir}/conf.d/${n/.dll/.ini}
+	done
+}

@@ -1,0 +1,22 @@
+--- PEAR.php	2007-10-14 12:14:01.437500000 -0500
++++ PEAR.php	2007-10-14 12:14:21.531250000 -0500
+@@ -747,6 +747,8 @@
+             }
+             if (OS_WINDOWS) {
+                 $suffix = '.dll';
++            } elseif (PHP_OS == 'CYGWIN') {
++                $suffix = '.dll';
+             } elseif (PHP_OS == 'HP-UX') {
+                 $suffix = '.sl';
+             } elseif (PHP_OS == 'AIX') {
+--- PEAR/Installer.php	2007-10-14 13:30:19.796875000 -0500
++++ PEAR/Installer.php	2007-10-14 14:02:17.093750000 -0500
+@@ -1434,7 +1434,7 @@
+                 }
+                 $this->log(3, "+ cp $ext[file] $copyto");
+                 $this->addFileOperation('rename', array($ext['file'], $copyto));
+-                if (!OS_WINDOWS) {
++                if (!OS_WINDOWS && (PHP_OS != 'CYGWIN')) {
+                     $mode = 0666 & ~(int)octdec($this->config->get('umask'));
+                     $this->addFileOperation('chmod', array($mode, $copyto));
+                     if (!@chmod($copyto, $mode)) {
