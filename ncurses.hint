@@ -1,5 +1,5 @@
 category: PHP
-requires: cygwin php libncurses8
+requires: php libncurses8
 external-source: php
 sdesc: "PHP Hypertext Preprocessor (ncurses extension)"
 ldesc: "PHP (recursive acronym for 'PHP: Hypertext Preprocessor') is a

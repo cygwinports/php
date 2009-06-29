@@ -1,5 +1,5 @@
 category: PHP
-requires: cygwin php libmhash2
+requires: php libmhash2
 external-source: php
 sdesc: "PHP Hypertext Preprocessor (mhash extension)"
 ldesc: "PHP (recursive acronym for 'PHP: Hypertext Preprocessor') is a

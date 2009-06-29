@@ -1,5 +1,5 @@
 category: PHP
-requires: cygwin php libdb4.6 libgdbm4
+requires: php libdb4.6 libgdbm4
 external-source: php
 sdesc: "PHP Hypertext Preprocessor (dba extension)"
 ldesc: "PHP (recursive acronym for 'PHP: Hypertext Preprocessor') is a

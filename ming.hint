@@ -1,5 +1,5 @@
 category: PHP
-requires: cygwin php libming0
+requires: php libming0
 external-source: php
 sdesc: "PHP Hypertext Preprocessor (ming extension)"
 ldesc: "PHP (recursive acronym for 'PHP: Hypertext Preprocessor') is a

@@ -1,5 +1,5 @@
 category: Interpreters PHP Web
-requires: cygwin crypt libpcre0 libxml2 minires
+requires: crypt libpcre0 libxml2 minires
 sdesc: "PHP Hypertext Preprocessor (CLI and CGI interpreters)"
 ldesc: "PHP (recursive acronym for 'PHP: Hypertext Preprocessor') is a
 widely-used Open Source general-purpose scripting language that is

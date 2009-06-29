@@ -1,5 +1,5 @@
 category: PHP
-requires: cygwin php libmysqlclient15
+requires: php libmysqlclient15
 external-source: php
 sdesc: "PHP Hypertext Preprocessor (mysqli extension)"
 ldesc: "PHP (recursive acronym for 'PHP: Hypertext Preprocessor') is a

@@ -1,5 +1,5 @@
 category: PHP
-requires: cygwin php
+requires: php
 external-source: php
 sdesc: "PHP Hypertext Preprocessor (exif extension)"
 ldesc: "PHP (recursive acronym for 'PHP: Hypertext Preprocessor') is a
