@@ -1,0 +1,27 @@
+--- origsrc/php-5.2.6/ext/ming/ming.c	2007-12-31 01:20:08.000000000 -0600
++++ src/php-5.2.6/ext/ming/ming.c	2008-05-07 21:36:31.484375000 -0500
+@@ -1596,6 +1596,7 @@
+ 
+ /* {{{ proto string swffont::getShape(code)
+    Returns the glyph shape of a char as a text string */
++/*
+ PHP_METHOD(swffont, getShape)
+ {
+ 	zval **zcode;
+@@ -1610,6 +1611,7 @@
+ 	RETVAL_STRING(result, 1);
+ 	free(result);
+ }
++*/
+ /* }}} */
+ 
+ #endif
+@@ -1626,7 +1628,7 @@
+ 	PHP_ME(swffont, getLeading,        NULL, 0)
+ #ifdef HAVE_NEW_MING
+ /*	PHP_ME(swffont, addchars,          NULL, 0)*/
+-	PHP_ME(swffont, getShape,          NULL, 0)
++/*	PHP_ME(swffont, getShape,          NULL, 0)*/
+ #endif
+ 	{ NULL, NULL, NULL }
+ };

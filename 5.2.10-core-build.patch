@@ -1,0 +1,83 @@
+--- origsrc/php-5.2.6/Makefile.global	2007-08-03 09:01:56.000000000 -0500
++++ src/php-5.2.6/Makefile.global	2008-05-07 14:33:42.593750000 -0500
+@@ -39,8 +39,7 @@
+ 	@test -d modules && \
+ 	$(mkinstalldirs) $(INSTALL_ROOT)$(EXTENSION_DIR)
+ 	@echo "Installing shared extensions:     $(INSTALL_ROOT)$(EXTENSION_DIR)/"
+-	@rm -f modules/*.la >/dev/null 2>&1
+-	@$(INSTALL) modules/* $(INSTALL_ROOT)$(EXTENSION_DIR)
++	@$(INSTALL) modules/*.$(SHLIB_DL_SUFFIX_NAME) $(INSTALL_ROOT)$(EXTENSION_DIR)
+ 
+ install-headers:
+ 	-@if test "$(INSTALL_HEADERS)"; then \
+@@ -132,7 +131,7 @@
+ 	find . -name \*.gcno -o -name \*.gcda | xargs rm -f
+ 	find . -name \*.lo -o -name \*.o | xargs rm -f
+ 	find . -name \*.la -o -name \*.a | xargs rm -f 
+-	find . -name \*.so | xargs rm -f
++	find . -name \*.$(SHLIB_DL_SUFFIX_NAME) | xargs rm -f
+ 	find . -name .libs -a -type d|xargs rm -rf
+ 	rm -f libphp$(PHP_MAJOR_VERSION).la $(SAPI_CLI_PATH) $(OVERALL_TARGET) modules/* libs/*
+ 
+--- origsrc/php-5.2.6/acinclude.m4	2007-08-20 09:28:45.000000000 -0500
++++ src/php-5.2.6/acinclude.m4	2008-05-07 14:33:42.609375000 -0500
+@@ -850,6 +850,10 @@
+       suffix=so
+       link_cmd='$(LIBTOOL) --mode=link ifelse($4,,[$(CC)],[$(CXX)]) $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS) $(LDFLAGS) -Wl,-G -o '$3'/$1.la -export-dynamic -avoid-version -prefer-pic -module -rpath $(phplibdir) $(EXTRA_LDFLAGS) $($2) $(translit($1,a-z_-,A-Z__)_SHARED_LIBADD) && mv -f '$3'/.libs/$1.so '$3'/$1.so'
+       ;;
++    *cygwin*[)]
++      suffix=la
++      link_cmd='$(LIBTOOL) --mode=link ifelse($4,,[$(CC)],[$(CXX)]) $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS) $(LDFLAGS) -o [$]@ -shared -export-dynamic -avoid-version -module -no-undefined -rpath $(phplibdir) $(EXTRA_LDFLAGS) $($2) ifelse($1, libphp5lib, , -L$(top_builddir)/cygwin -lphp5lib) $(translit($1,a-z_-,A-Z__)_SHARED_LIBADD)'
++      ;;
+     *netware*[)]
+       suffix=nlm
+       link_cmd='$(LIBTOOL) --mode=link ifelse($4,,[$(CC)],[$(CXX)]) $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS) $(LDFLAGS) -o [$]@ -shared -export-dynamic -avoid-version -prefer-pic -module -rpath $(phplibdir) $(EXTRA_LDFLAGS) $($2) ifelse($1, php5lib, , -L$(top_builddir)/netware -lphp5lib) $(translit(ifelse($1, php5lib, $1, m4_substr($1, 3)),a-z_-,A-Z__)_SHARED_LIBADD)'
+@@ -1976,6 +1980,10 @@
+    SHLIB_SUFFIX_NAME=dylib
+    SHLIB_DL_SUFFIX_NAME=so
+    ;;
++ *cygwin*[)]
++   SHLIB_SUFFIX_NAME=dll.a
++   SHLIB_DL_SUFFIX_NAME=dll
++   ;;
+  esac
+ ])
+ 
+--- origsrc/php-5.2.10/configure.in
++++ src/php-5.2.10/configure.in
+@@ -235,6 +235,13 @@
+     PHP_SUBST(PHP5LIB_SHARED_LIBADD)
+     PHP_SHARED_MODULE(php5lib, PHP_GLOBAL_OBJS, netware)
+     ;;
++*cygwin*)
++    PHP_BUILD_PROGRAM
++    PHP_ADD_SOURCES(/main, internal_functions.c,,PHP_GLOBAL_OBJS)
++    LIBPHP5LIB_SHARED_LIBADD=\$\(EXTRA_LIBS\)
++    PHP_SUBST(LIBPHP5LIB_SHARED_LIBADD)
++    PHP_SHARED_MODULE(libphp5lib, PHP_GLOBAL_OBJS, cygwin)
++    ;;
+ esac
+ 
+ # Disable PIC mode by default where it is known to be safe to do so,
+@@ -960,7 +967,7 @@
+         standard_libtool_flag='-prefer-non-pic'
+         ;;
+     esac
+-    EXTRA_LDFLAGS="$EXTRA_LDFLAGS -avoid-version -module"
++    EXTRA_LDFLAGS="$EXTRA_LDFLAGS -avoid-version -module -no-undefined"
+     ;;
+ esac
+
+@@ -1185,6 +1192,12 @@
+ AC_DEFINE_UNQUOTED(PHP_BUILD_DATE,"$PHP_BUILD_DATE",[PHP build date])
+ 
+ case $host_alias in
++*cygwin*)
++  PHP_UNAME=`uname -a | xargs`
++  AC_DEFINE_UNQUOTED(PHP_UNAME,"$PHP_UNAME",[uname -a output])
++  PHP_OS="CYGWIN"
++  AC_DEFINE_UNQUOTED(PHP_OS,"$PHP_OS",[uname output])
++  ;;
+ *netware*)
+   PHP_OS="NetWare"
+   PHP_UNAME="NetWare"

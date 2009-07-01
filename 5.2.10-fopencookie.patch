@@ -1,0 +1,14 @@
+--- origsrc/php-5.2.10/main/streams/cast.c	2009-06-03 03:59:19.000000000 -0500
++++ src/php-5.2.10/main/streams/cast.c	2009-06-30 23:13:51.698131600 -0500
+@@ -29,6 +29,11 @@
+ 
+ #include "php_streams_int.h"
+ 
++#if HAVE_FUNOPEN && HAVE_FOPENCOOKIE
++#undef HAVE_FUNOPEN
++#define HAVE_FUNOPEN 0
++#endif
++
+ /* Under BSD, emulate fopencookie using funopen */
+ #if HAVE_FUNOPEN
+ typedef struct {

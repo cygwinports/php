@@ -5,63 +5,59 @@ widely-used Open Source general-purpose scripting language that is
 especially suited for Web development and can be embedded into HTML.
 
 Runtime requirements:
-  cygwin-1.5.25-11
+  cygwin-1.7.0-50
   crypt-1.1-1
-  libpcre0-7.6-2
-  libxml2-2.6.32-1
-  minires-1.01-1
+  libgcc1-4.3.2-2
+  libpcre0-7.9-1
+  libxml2-2.7.3-10
 
 (apache-mod_php5)
   apache-1.3.33-2
 (apache2-mod_php5)
   apache2-2.2.6-1
-  libapr1-1.2.12-1
-  libaprutil1-1.2.12-1
+  libapr1-1.3.3-4
+  libaprutil1-1.3.4-4
 
 (php-* extensions require from among the following:)
-  file-4.21-1
+  file-5.00-3
   libaspell15-0.60.5-1
-  libbz2_1-1.0.5-1
-  libcurl4-7.16.3-1
-  libdb4.6-4.6.21.1-1
-  libgd2-2.0.35-1
-  libgdbm4-1.8.3-8
-  libgmp3-4.2.1-1
-  libiconv2-1.11-1
-  libintl8-0.15-1
-  libmbfl1-1.1.0rc3.466-1
-  libmcrypt-2.5.8-1
-  libmhash2-0.9.9-1
-  libming0-0.4.0.beta5-1
-  libmysqlclient15-5.0.51-1
-  libncurses8-5.5-3
-  libopenldap2_3_0-2.3.39-1
-  libreadline6-5.2.7-9
-  librecode0-3.7_beta2-1
-  libsqlite0-2.8.17-3
-  libsqlite3_0-3.5.6-1
-  libsybdb5-0.63-1
-  libtidy0_99_0-20071106-1
-  libxmlrpc-epi0-0.54-1
-  libxslt-1.1.23-1
-  openssl-0.9.8g-1
-  t1lib-5.1.2-1
-  zlib-1.2.3-2
+  libbz2_1-1.0.5-10
+  libcurl4-7.19.4-1
+  libdb4.6-4.6.21.4-10
+  libgd2-2.0.36RC1-1
+  libgdbm4-1.8.3-20
+  libgmp3-4.3.1-3
+  libiconv2-1.13-10
+  libintl8-0.17-11
+  libmcrypt4-2.5.8-1
+  libmysqlclient16-5.1.34-1
+  libncurses9-5.7-14
+  libopenldap2_3_0-2.3.43-1
+  libpq5-8.2.11-1
+  libreadline6-5.2.13-11
+  libsqlite3_0-3.6.11-1
+  libsybdb5-0.82-1
+  libtidy0_99_0-20090325-1
+  libxmlrpc-epi0-0.54-10
+  libxslt-1.1.24-10
+  mhash-0.9.2-1
+  openssl-0.9.8k-2
+  t1lib5-5.1.2-3
+  zlib0-1.2.3-10
 
 Build requirements:
 (besides corresponding -devel packages)
-  autoconf2.5-2.61-1
-  binutils-20060817-1
+  autoconf2.5-2.63-1
+  binutils-20080624-2
   bison-2.3-1
-  cygport-0.3.10-1
+  cygport-0.9.7-1
   flex-2.5.35-1
-  gawk-3.1.6-1
-  gcc-core-3.4.4-3
-  gcc-g++-3.4.4-3
-  libtool-2.2.2-2
-  make-3.81-1
-  pkg-config-0.21-1
-  re2c-0.13.4-1
+  gawk-3.1.6-2
+  gcc4-core-4.3.2-2
+  libtool-2.2.7a-13
+  make-3.81-2
+  pkg-config-0.23b-10
+  re2c-0.13.5-10
   sed-4.1.5-2
 
 Canonical website:
@@ -73,24 +69,23 @@ Canonical download:
 -------------------------------------------
 
 Build instructions:
-  unpack php-5.2.6-X-src.tar.bz2
+  unpack php-5.2.10-X-src.tar.bz2
     if you use setup to install this src package, it will be
 	 unpacked under /usr/src automatically
   cd /usr/src
-  cygport ./php-5.2.6-X.cygport all
+  cygport ./php-5.2.10-X.cygport all
 
 This will create:
-  /usr/src/apache-mod_php5-5.2.6-X.tar.bz2
-  /usr/src/apache2-mod_php5-5.2.6-X.tar.bz2
-  /usr/src/php-5.2.6-X-src.tar.bz2
-  /usr/src/php-5.2.6-X.tar.bz2
-  /usr/src/php-*-5.2.6-X.tar.bz2
+  /usr/src/apache-mod_php5-5.2.10-X.tar.bz2
+  /usr/src/apache2-mod_php5-5.2.10-X.tar.bz2
+  /usr/src/php-5.2.10-X-src.tar.bz2
+  /usr/src/php-5.2.10-X.tar.bz2
+  /usr/src/php-*-5.2.10-X.tar.bz2
 
 -------------------------------------------
 
 Files included in the binary package:
 
-  /etc/php5/conf.d/.keep-php
   /usr/bin/cygphp5lib.dll
   /usr/bin/php-cgi.exe
   /usr/bin/php-config
@@ -181,6 +176,7 @@ Files included in the binary package:
   /usr/include/php/ext/hash/php_hash_whirlpool.h
   /usr/include/php/ext/iconv/php_have_bsd_iconv.h
   /usr/include/php/ext/iconv/php_have_glibc_iconv.h
+  /usr/include/php/ext/iconv/php_have_ibm_iconv.h
   /usr/include/php/ext/iconv/php_have_iconv.h
   /usr/include/php/ext/iconv/php_have_libiconv.h
   /usr/include/php/ext/iconv/php_iconv.h
@@ -203,6 +199,7 @@ Files included in the binary package:
   /usr/include/php/ext/spl/spl_iterators.h
   /usr/include/php/ext/spl/spl_observer.h
   /usr/include/php/ext/spl/spl_sxe.h
+  /usr/include/php/ext/sqlite/libsqlite/src/sqlite.h
   /usr/include/php/ext/standard/base64.h
   /usr/include/php/ext/standard/basic_functions.h
   /usr/include/php/ext/standard/crc32.h
@@ -309,56 +306,6 @@ Files included in the binary package:
   /usr/include/php/regex/regex_extra.h
   /usr/include/php/regex/utils.h
   /usr/lib/libphp5lib.dll.a
-  /usr/lib/php/20060613/bcmath.dll
-  /usr/lib/php/20060613/bz2.dll
-  /usr/lib/php/20060613/calendar.dll
-  /usr/lib/php/20060613/ctype.dll
-  /usr/lib/php/20060613/curl.dll
-  /usr/lib/php/20060613/dba.dll
-  /usr/lib/php/20060613/dbase.dll
-  /usr/lib/php/20060613/exif.dll
-  /usr/lib/php/20060613/ftp.dll
-  /usr/lib/php/20060613/gd.dll
-  /usr/lib/php/20060613/gettext.dll
-  /usr/lib/php/20060613/gmp.dll
-  /usr/lib/php/20060613/hash.dll
-  /usr/lib/php/20060613/iconv.dll
-  /usr/lib/php/20060613/json.dll
-  /usr/lib/php/20060613/ldap.dll
-  /usr/lib/php/20060613/mcrypt.dll
-  /usr/lib/php/20060613/mhash.dll
-  /usr/lib/php/20060613/mime_magic.dll
-  /usr/lib/php/20060613/mssql.dll
-  /usr/lib/php/20060613/mysql.dll
-  /usr/lib/php/20060613/mysqli.dll
-  /usr/lib/php/20060613/ncurses.dll
-  /usr/lib/php/20060613/odbc.dll
-  /usr/lib/php/20060613/openssl.dll
-  /usr/lib/php/20060613/pdo_dblib.dll
-  /usr/lib/php/20060613/pdo_mysql.dll
-  /usr/lib/php/20060613/pdo_odbc.dll
-  /usr/lib/php/20060613/pdo_sqlite.dll
-  /usr/lib/php/20060613/posix.dll
-  /usr/lib/php/20060613/pspell.dll
-  /usr/lib/php/20060613/readline.dll
-  /usr/lib/php/20060613/session.dll
-  /usr/lib/php/20060613/shmop.dll
-  /usr/lib/php/20060613/soap.dll
-  /usr/lib/php/20060613/sockets.dll
-  /usr/lib/php/20060613/sqlite.dll
-  /usr/lib/php/20060613/sybase.dll
-  /usr/lib/php/20060613/sysvmsg.dll
-  /usr/lib/php/20060613/sysvsem.dll
-  /usr/lib/php/20060613/sysvshm.dll
-  /usr/lib/php/20060613/tidy.dll
-  /usr/lib/php/20060613/tokenizer.dll
-  /usr/lib/php/20060613/wddx.dll
-  /usr/lib/php/20060613/xmlreader.dll
-  /usr/lib/php/20060613/xmlrpc.dll
-  /usr/lib/php/20060613/xmlwriter.dll
-  /usr/lib/php/20060613/xsl.dll
-  /usr/lib/php/20060613/zip.dll
-  /usr/lib/php/20060613/zlib.dll
   /usr/lib/php/build/Makefile.global
   /usr/lib/php/build/acinclude.m4
   /usr/lib/php/build/config.guess
@@ -370,32 +317,34 @@ Files included in the binary package:
   /usr/lib/php/build/run-tests.php
   /usr/lib/php/build/scan_makefile_in.awk
   /usr/lib/php/build/shtool
-  /usr/share/doc/php-5.2.6/CREDITS
-  /usr/share/doc/php-5.2.6/INSTALL
-  /usr/share/doc/php-5.2.6/LICENSE
-  /usr/share/doc/php-5.2.6/NEWS
-  /usr/share/doc/php-5.2.6/TODO
+  /usr/share/doc/php/CREDITS
+  /usr/share/doc/php/LICENSE
+  /usr/share/doc/php/NEWS
+  /usr/share/doc/php/TODO
   /usr/share/man/man1/php-config.1.gz
   /usr/share/man/man1/php.1.gz
   /usr/share/man/man1/phpize.1.gz
 
 (apache-mod_php5)
+  /etc/postinstall/apache-mod_php5.sh
+  /etc/preremove/apache-mod_php5.sh
   /usr/lib/apache/libphp5.dll
 
 (apache2-mod_php5)
+  /etc/postinstall/apache2-mod_php5.sh
+  /etc/preremove/apache2-mod_php5.sh
   /usr/lib/apache2/cygphp5.so
   /usr/lib/apache2/libphp5.la
 
-(php-pear)
+(php-PEAR)
   /etc/php5/pear.conf
   /usr/bin/pear
   /usr/bin/peardev
   /usr/bin/pecl
   /usr/share/pear/.channels/.alias/pear.txt
   /usr/share/pear/.channels/.alias/pecl.txt
+  /usr/share/pear/.channels/.alias/phpdocs.txt
   /usr/share/pear/.channels/__uri.reg
-  /usr/share/pear/.channels/pear.php.net.reg
-  /usr/share/pear/.channels/pecl.php.net.reg
   /usr/share/pear/.depdb
   /usr/share/pear/.depdblock
   /usr/share/pear/.filemap
@@ -404,10 +353,12 @@ Files included in the binary package:
   /usr/share/pear/.registry/console_getopt.reg
   /usr/share/pear/.registry/pear.reg
   /usr/share/pear/.registry/structures_graph.reg
+  /usr/share/pear/.registry/xml_util.reg
   /usr/share/pear/Archive/Tar.php
   /usr/share/pear/Console/Getopt.php
   /usr/share/pear/OS/Guess.php
   /usr/share/pear/PEAR.php
+  /usr/share/pear/PEAR.php.orig
   /usr/share/pear/PEAR/Autoloader.php
   /usr/share/pear/PEAR/Builder.php
   /usr/share/pear/PEAR/ChannelFile.php
@@ -438,17 +389,20 @@ Files included in the binary package:
   /usr/share/pear/PEAR/Command/Test.xml
   /usr/share/pear/PEAR/Common.php
   /usr/share/pear/PEAR/Config.php
-  /usr/share/pear/PEAR/Dependency.php
   /usr/share/pear/PEAR/Dependency2.php
   /usr/share/pear/PEAR/DependencyDB.php
   /usr/share/pear/PEAR/Downloader.php
   /usr/share/pear/PEAR/Downloader/Package.php
   /usr/share/pear/PEAR/ErrorStack.php
   /usr/share/pear/PEAR/Exception.php
+  /usr/share/pear/PEAR/FixPHP5PEARWarnings.php
   /usr/share/pear/PEAR/Frontend.php
   /usr/share/pear/PEAR/Frontend/CLI.php
   /usr/share/pear/PEAR/Installer.php
+  /usr/share/pear/PEAR/Installer.php.orig
   /usr/share/pear/PEAR/Installer/Role.php
+  /usr/share/pear/PEAR/Installer/Role/Cfg.php
+  /usr/share/pear/PEAR/Installer/Role/Cfg.xml
   /usr/share/pear/PEAR/Installer/Role/Common.php
   /usr/share/pear/PEAR/Installer/Role/Data.php
   /usr/share/pear/PEAR/Installer/Role/Data.xml
@@ -464,6 +418,8 @@ Files included in the binary package:
   /usr/share/pear/PEAR/Installer/Role/Src.xml
   /usr/share/pear/PEAR/Installer/Role/Test.php
   /usr/share/pear/PEAR/Installer/Role/Test.xml
+  /usr/share/pear/PEAR/Installer/Role/Www.php
+  /usr/share/pear/PEAR/Installer/Role/Www.xml
   /usr/share/pear/PEAR/PackageFile.php
   /usr/share/pear/PEAR/PackageFile/Generator/v1.php
   /usr/share/pear/PEAR/PackageFile/Generator/v2.php
@@ -479,7 +435,6 @@ Files included in the binary package:
   /usr/share/pear/PEAR/REST/11.php
   /usr/share/pear/PEAR/REST/13.php
   /usr/share/pear/PEAR/Registry.php
-  /usr/share/pear/PEAR/Remote.php
   /usr/share/pear/PEAR/RunTest.php
   /usr/share/pear/PEAR/Task/Common.php
   /usr/share/pear/PEAR/Task/Postinstallscript.php
@@ -498,6 +453,7 @@ Files included in the binary package:
   /usr/share/pear/Structures/Graph/Manipulator/TopologicalSorter.php
   /usr/share/pear/Structures/Graph/Node.php
   /usr/share/pear/System.php
+  /usr/share/pear/XML/Util.php
   /usr/share/pear/data/PEAR/package.dtd
   /usr/share/pear/data/PEAR/template.spec
   /usr/share/pear/data/Structures_Graph/LICENSE
@@ -506,6 +462,7 @@ Files included in the binary package:
   /usr/share/pear/data/Structures_Graph/publish.sh
   /usr/share/pear/doc/Archive_Tar/docs/Archive_Tar.txt
   /usr/share/pear/doc/PEAR/INSTALL
+  /usr/share/pear/doc/PEAR/LICENSE
   /usr/share/pear/doc/PEAR/README
   /usr/share/pear/doc/Structures_Graph/docs/generate.sh
   /usr/share/pear/doc/Structures_Graph/docs/html/Structures_Graph/Structures_Graph.html
@@ -528,11 +485,32 @@ Files included in the binary package:
   /usr/share/pear/doc/Structures_Graph/docs/html/packages.html
   /usr/share/pear/doc/Structures_Graph/docs/html/todolist.html
   /usr/share/pear/doc/Structures_Graph/docs/tutorials/Structures_Graph/Structures_Graph.pkg
+  /usr/share/pear/doc/XML_Util/examples/example.php
+  /usr/share/pear/doc/XML_Util/examples/example2.php
   /usr/share/pear/pearcmd.php
   /usr/share/pear/peclcmd.php
   /usr/share/pear/test/Structures_Graph/tests/README
   /usr/share/pear/test/Structures_Graph/tests/all-tests.php
   /usr/share/pear/test/Structures_Graph/tests/testCase/BasicGraph.php
+  /usr/share/pear/test/XML_Util/tests/AllTests.php
+  /usr/share/pear/test/XML_Util/tests/testBasic_apiVersion.phpt
+  /usr/share/pear/test/XML_Util/tests/testBasic_attributesToString.phpt
+  /usr/share/pear/test/XML_Util/tests/testBasic_collapseEmptyTags.phpt
+  /usr/share/pear/test/XML_Util/tests/testBasic_createCDataSection.phpt
+  /usr/share/pear/test/XML_Util/tests/testBasic_createComment.phpt
+  /usr/share/pear/test/XML_Util/tests/testBasic_createEndElement.phpt
+  /usr/share/pear/test/XML_Util/tests/testBasic_createStartElement.phpt
+  /usr/share/pear/test/XML_Util/tests/testBasic_createTag.phpt
+  /usr/share/pear/test/XML_Util/tests/testBasic_createTagFromArray.phpt
+  /usr/share/pear/test/XML_Util/tests/testBasic_getDocTypeDeclaration.phpt
+  /usr/share/pear/test/XML_Util/tests/testBasic_getXmlDeclaration.phpt
+  /usr/share/pear/test/XML_Util/tests/testBasic_isValidName.phpt
+  /usr/share/pear/test/XML_Util/tests/testBasic_raiseError.phpt
+  /usr/share/pear/test/XML_Util/tests/testBasic_replaceEntities.phpt
+  /usr/share/pear/test/XML_Util/tests/testBasic_reverseEntities.phpt
+  /usr/share/pear/test/XML_Util/tests/testBasic_splitQualifiedName.phpt
+  /usr/share/pear/test/XML_Util/tests/testBug_4950.phpt
+  /usr/share/pear/test/XML_Util/tests/testBug_5392.phpt
 
 (php-<extension>)
   /etc/php5/conf.d/<extension>.ini
@@ -542,14 +520,8 @@ Files included in the binary package:
 
 Port Notes:
 
------ version 5.2.6-1 -----
-Version bump.
-
------ version 5.2.5-1 -----
-Version bump.
-
------ version 5.2.4-1 -----
-Initial release for Cygwin.
+----- version 5.2.10-1 -----
+Initial release for Cygwin 1.7.
 
 
 Cygwin port maintained by:

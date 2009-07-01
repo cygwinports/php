@@ -1,0 +1,11 @@
+--- origsrc/php-5.2.6/ext/ldap/config.m4	2007-08-08 06:37:44.000000000 -0500
++++ src/php-5.2.6/ext/ldap/config.m4	2008-05-07 14:33:42.640625000 -0500
+@@ -50,7 +50,7 @@
+     SASL_LIB="-L$LDAP_SASL_LIBDIR -lsasl2"
+   fi
+   
+-  PHP_CHECK_LIBRARY(ldap, sasl_version,
++  PHP_CHECK_LIBRARY(sasl2, sasl_version,
+   [
+     PHP_ADD_INCLUDE($LDAP_SASL_INCDIR)
+     PHP_ADD_LIBRARY_WITH_PATH(sasl2, $LDAP_SASL_LIBDIR, LDAP_SHARED_LIBADD)

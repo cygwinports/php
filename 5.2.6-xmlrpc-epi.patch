@@ -1,0 +1,11 @@
+--- origsrc/php-5.2.6/ext/xmlrpc/config.m4	2005-11-29 12:26:02.000000000 -0600
++++ src/php-5.2.6/ext/xmlrpc/config.m4	2008-05-07 21:53:48.359375000 -0500
+@@ -112,7 +112,7 @@
+   fi
+ 
+   PHP_ADD_INCLUDE($XMLRPC_DIR)
+-  PHP_ADD_LIBRARY_WITH_PATH(xmlrpc, $XMLRPC_DIR/$PHP_LIBDIR, XMLRPC_SHARED_LIBADD)
++  PHP_ADD_LIBRARY_WITH_PATH(xmlrpc-epi, $XMLRPC_DIR/$PHP_LIBDIR, XMLRPC_SHARED_LIBADD)
+   PHP_NEW_EXTENSION(xmlrpc,xmlrpc-epi-php.c, $ext_shared)
+   XMLRPC_MODULE_TYPE=external
+ fi

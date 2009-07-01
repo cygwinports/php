@@ -1,0 +1,81 @@
+--- origsrc/php-5.2.6/sapi/apache/config.m4	2007-07-11 18:20:36.000000000 -0500
++++ src/php-5.2.6/sapi/apache/config.m4	2008-05-07 14:33:42.718750000 -0500
+@@ -75,6 +75,10 @@
+     PHP_AIX_LDFLAGS="-Wl,-brtl"
+     build_type=shared
+     ;;
++  *cygwin*)
++    EXTRA_LDFLAGS="$EXTRA_LDFLAGS -lhttpd"
++    build_type=shared
++    ;;
+   *darwin*)
+     MH_BUNDLE_FLAGS="-dynamic -twolevel_namespace -bundle -bundle_loader $APXS_HTTPD"
+     PHP_SUBST(MH_BUNDLE_FLAGS)
+--- origsrc/php-5.2.6/sapi/apache2handler/config.m4	2007-07-11 18:20:36.000000000 -0500
++++ src/php-5.2.6/sapi/apache2handler/config.m4	2008-05-07 14:33:42.718750000 -0500
+@@ -49,7 +49,9 @@
+     echo $APU_BINDIR/apu-config`
+ 
+   APR_CFLAGS="`$APR_CONFIG --cppflags --includes`"
++  APR_LIBS="`$APR_CONFIG --ldflags --link-ld`"
+   APU_CFLAGS="`$APU_CONFIG --includes`"
++  APU_LIBS="`$APU_CONFIG --ldflags --link-ld`"
+ 
+   for flag in $APXS_CFLAGS; do
+     case $flag in
+@@ -58,6 +60,7 @@
+   done
+ 
+   APACHE_CFLAGS="$APACHE_CPPFLAGS -I$APXS_INCLUDEDIR $APR_CFLAGS $APU_CFLAGS"
++  EXTRA_LIBS="$APR_LIBS $APU_LIBS"
+ 
+   # Test that we're trying to configure with apache 2.x
+   PHP_AP_EXTRACT_VERSION($APXS_HTTPD)
+@@ -87,17 +90,12 @@
+     PHP_SELECT_SAPI(apache2handler, shared, mod_php5.c sapi_apache2.c apache_config.c php_functions.c, $APACHE_CFLAGS)
+     INSTALL_IT="$INSTALL_IT $SAPI_LIBTOOL" 
+     ;;
++  *cygwin*)
++    EXTRA_LDFLAGS="-shrext .so $EXTRA_LDFLAGS -L`$APXS -q LIBDIR` -lhttpd2core"
++    PHP_SELECT_SAPI(apache2handler, shared, mod_php5.c sapi_apache2.c apache_config.c php_functions.c, $APACHE_CFLAGS) 
++    INSTALL_IT="$INSTALL_IT $SAPI_LIBTOOL"
++    ;;
+   *darwin*)
+-    dnl When using bundles on Darwin, we must resolve all symbols.  However,
+-    dnl the linker does not recursively look at the bundle loader and
+-    dnl pull in its dependencies.  Therefore, we must pull in the APR
+-    dnl and APR-util libraries.
+-    if test -x "$APR_CONFIG"; then
+-        MH_BUNDLE_FLAGS="`$APR_CONFIG --ldflags --link-ld --libs`"
+-    fi
+-    if test -x "$APU_CONFIG"; then
+-        MH_BUNDLE_FLAGS="`$APU_CONFIG --ldflags --link-ld --libs` $MH_BUNDLE_FLAGS"
+-    fi
+     MH_BUNDLE_FLAGS="-bundle -bundle_loader $APXS_HTTPD $MH_BUNDLE_FLAGS"
+     PHP_SUBST(MH_BUNDLE_FLAGS)
+     PHP_SELECT_SAPI(apache2handler, bundle, mod_php5.c sapi_apache2.c apache_config.c php_functions.c, $APACHE_CFLAGS)
+--- origsrc/php-5.2.6/sapi/cgi/config9.m4	2007-07-11 18:20:36.000000000 -0500
++++ src/php-5.2.6/sapi/cgi/config9.m4	2008-05-07 14:33:42.734375000 -0500
+@@ -92,6 +92,9 @@
+       *aix*)
+         BUILD_CGI="echo '\#! .' > php.sym && echo >>php.sym && nm -BCpg \`echo \$(PHP_GLOBAL_OBJS) \$(PHP_SAPI_OBJS) | sed 's/\([A-Za-z0-9_]*\)\.lo/\1.o/g'\` | \$(AWK) '{ if (((\$\$2 == \"T\") || (\$\$2 == \"D\") || (\$\$2 == \"B\")) && (substr(\$\$3,1,1) != \".\")) { print \$\$3 } }' | sort -u >> php.sym && \$(LIBTOOL) --mode=link \$(CC) -export-dynamic \$(CFLAGS_CLEAN) \$(EXTRA_CFLAGS) \$(EXTRA_LDFLAGS_PROGRAM) \$(LDFLAGS) -Wl,-brtl -Wl,-bE:php.sym \$(PHP_RPATHS) \$(PHP_GLOBAL_OBJS) \$(PHP_SAPI_OBJS) \$(EXTRA_LIBS) \$(ZEND_EXTRA_LIBS) -o \$(SAPI_CGI_PATH)"
+         ;;
++      *cygwin*)
++        BUILD_CGI="\$(LIBTOOL) --mode=link \$(CC) -export-dynamic \$(CFLAGS_CLEAN) \$(EXTRA_CFLAGS) \$(EXTRA_LDFLAGS_PROGRAM) \$(LDFLAGS) \$(PHP_SAPI_OBJS) \$(EXTRA_LIBS) \$(ZEND_EXTRA_LIBS) -Lcygwin -lphp5lib -o \$(SAPI_CGI_PATH)"
++      ;;
+       *darwin*)
+         BUILD_CGI="\$(CC) \$(CFLAGS_CLEAN) \$(EXTRA_CFLAGS) \$(EXTRA_LDFLAGS_PROGRAM) \$(LDFLAGS) \$(NATIVE_RPATHS) \$(PHP_GLOBAL_OBJS:.lo=.o) \$(PHP_SAPI_OBJS:.lo=.o) \$(PHP_FRAMEWORKS) \$(EXTRA_LIBS) \$(ZEND_EXTRA_LIBS) -o \$(SAPI_CGI_PATH)"
+       ;;
+--- origsrc/php-5.2.6/sapi/cli/config.m4	2007-07-11 18:20:36.000000000 -0500
++++ src/php-5.2.6/sapi/cli/config.m4	2008-05-07 14:33:42.734375000 -0500
+@@ -16,6 +16,10 @@
+   *aix*)
+     BUILD_CLI="echo '\#! .' > php.sym && echo >>php.sym && nm -BCpg \`echo \$(PHP_GLOBAL_OBJS) \$(PHP_CLI_OBJS) | sed 's/\([A-Za-z0-9_]*\)\.lo/\1.o/g'\` | \$(AWK) '{ if (((\$\$2 == \"T\") || (\$\$2 == \"D\") || (\$\$2 == \"B\")) && (substr(\$\$3,1,1) != \".\")) { print \$\$3 } }' | sort -u >> php.sym && \$(LIBTOOL) --mode=link \$(CC) -export-dynamic \$(CFLAGS_CLEAN) \$(EXTRA_CFLAGS) \$(EXTRA_LDFLAGS_PROGRAM) \$(LDFLAGS) -Wl,-brtl -Wl,-bE:php.sym \$(PHP_RPATHS) \$(PHP_GLOBAL_OBJS) \$(PHP_CLI_OBJS) \$(EXTRA_LIBS) \$(ZEND_EXTRA_LIBS) -o \$(SAPI_CLI_PATH)"
+     ;;
++  *cygwin*)
++    SAPI_CLI_PATH=sapi/cli/php.exe
++    BUILD_CLI="\$(LIBTOOL) --mode=link \$(CC) -export-dynamic \$(CFLAGS_CLEAN) \$(EXTRA_CFLAGS) \$(EXTRA_LDFLAGS_PROGRAM) \$(LDFLAGS) \$(PHP_CLI_OBJS) \$(EXTRA_LIBS) \$(ZEND_EXTRA_LIBS) -Lcygwin -lphp5lib -o \$(SAPI_CLI_PATH)"
++    ;;
+   *darwin*)
+     BUILD_CLI="\$(CC) \$(CFLAGS_CLEAN) \$(EXTRA_CFLAGS) \$(EXTRA_LDFLAGS_PROGRAM) \$(LDFLAGS) \$(NATIVE_RPATHS) \$(PHP_GLOBAL_OBJS:.lo=.o) \$(PHP_CLI_OBJS:.lo=.o) \$(PHP_FRAMEWORKS) \$(EXTRA_LIBS) \$(ZEND_EXTRA_LIBS) -o \$(SAPI_CLI_PATH)"
+     ;;

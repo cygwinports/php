@@ -1,5 +1,5 @@
 category: PHP Web
-requires: php apr1 aprutil1 apache2
+requires: libgcc1 php libapr1 libaprutil1 apache2
 external-source: php
 sdesc: "PHP Hypertext Preprocessor (Apache2 mod_php5)"
 ldesc: "PHP (recursive acronym for 'PHP: Hypertext Preprocessor') is a

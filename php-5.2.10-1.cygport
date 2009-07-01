@@ -1,15 +1,25 @@
 DESCRIPTION="PHP Hyptertext Preprocessor"
 HOMEPAGE="http://www.php.net/"
 SRC_URI="http://www.php.net/distributions/${P}.tar.bz2"
+PATCH_URI="
+	5.2.10-core-build.patch
+	5.2.10-fopencookie.patch
+	5.2.6-gdbm.patch
+	5.2.6-ldap.patch
+	5.2.6-pspell.patch
+	5.2.6-sapi-build.patch
+	5.2.6-xmlrpc-epi.patch
+"
+#	5.2.6-ming.patch
+#	5.2.6-odbc32.patch
+#	5.2.6-recode.patch
 
 DIFF_EXCLUDES="aclocal.m4 libtool.m4 php_config.h.in tests"
 
 # EXTENSIONS:
 #
-# {pdo_,}pgsql don't work; even --export-dynamic does not help
-#
-# $ grep -h 'ADD_EXTENSION_DEP(' ${S}/ext/*/config.m4 | sed -e 's@^ *@# @g'
 # The following modules are deps for others, and hence must be builtin:
+# $ grep -h 'ADD_EXTENSION_DEP(' ${S}/ext/*/config.m4 | sed -e 's@^ *@# @g'
 # date, dom, filter, libxml, pcre, pdo, spl, xml
 #
 # Debian builds shared only those modules with additional deps, or
@@ -25,7 +35,6 @@ common_args="
   --sysconfdir=${inidir}
 
   --disable-static
-  --disable-ipv6
   --disable-rpath
   --with-config-file-path=${inidir}
   --with-config-file-scan-dir=${inidir}/conf.d
@@ -42,6 +51,10 @@ common_args="
   --with-pcre-dir=/usr
 "
 
+# ming: API incompatibilies
+# odbc, pdo_odbc: no longer compiles with w32api ODBC32
+# recode: conflicting symbols with mysql, others
+# sqlite: v2 bindings, use builtin
 cli_args="
   --enable-cgi
   --enable-discard-path
@@ -88,14 +101,14 @@ cli_args="
   --enable-json=shared
   --with-ldap=shared,/usr
   --with-ldap-sasl=/usr
-  --enable-mbstring=shared
+  --enable-mbstring=no
   --enable-mbregex=yes
   --enable-mbregex_backtrack=yes
   --with-libmbfl=/usr
   --with-mcrypt=shared,/usr
   --with-mhash=shared,/usr
-  --with-mime-magic=shared,/usr/share/file/magic.mime
-  --with-ming=shared,/usr
+  --with-mime-magic=shared,/usr/share/file/magic.mgc
+  --with-ming=no
   --with-msql=no
   --with-mssql=shared,/usr
   --with-mysql=shared,/usr
@@ -117,22 +130,21 @@ cli_args="
   --with-esoob=no
   --with-unixODBC=no
   --with-dbmaker=no
-  --with-msodbc=shared,/usr
   --enable-pcntl=no
   --with-pcre-regex=/usr
   --with-pdo-dblib=shared,/usr
   --with-pdo-firebird=no
   --with-pdo-mysql=shared,/usr
   --with-pdo-oci=no
-  --with-pdo-odbc=shared,odbc32
-  --with-pdo-pgsql=no
+  --with-pdo-odbc=no
+  --with-pdo-pgsql=shared,/usr
   --with-pdo-sqlite=shared,/usr
-  --with-pgsql=no
+  --with-pgsql=shared,/usr
   --enable-posix=shared
   --with-pspell=shared,/usr
   --with-libedit=no
   --with-readline=shared,/usr
-  --with-recode=shared,/usr
+  --with-recode=no
   --enable-session=shared
   --with-mm=no
   --enable-shmop=shared
@@ -140,7 +152,7 @@ cli_args="
   --enable-ucd-snmp-hack=no
   --enable-soap=shared,/usr
   --enable-sockets=shared,/usr
-  --with-sqlite=shared,/usr
+  --with-sqlite=shared
   --enable-sqlite-utf8=no
   --with-sybase=shared,/usr
   --with-sybase-ct=no
@@ -161,14 +173,13 @@ cli_args="
 
 # packaging
 #
-PKG_NAMES="${PN} ${PN}-pear apache-mod_php${PV_MAJ} apache2-mod_php${PV_MAJ}"
-PKG_HINTS="${PN} pear apache apache2"
-PKG_CONTENTS[0]="${inidir#/}/conf.d/.keep* usr/bin/*.dll usr/bin/php*
-                 usr/include/ usr/lib/lib* usr/lib/php/build/ usr/share/doc/ usr/share/man/"
-PKG_CONTENTS[1]="${inidir#/}/pear.conf usr/bin/pe* usr/share/pear/"
-PKG_CONTENTS[2]='usr/lib/apache/'
-PKG_CONTENTS[3]='usr/lib/apache2/'
-n=4
+PKG_NAMES="${PN} ${PN}-PEAR apache-mod_php${PV_MAJ} apache2-mod_php${PV_MAJ}"
+PKG_HINTS="${PN} PEAR apache apache2"
+php_CONTENTS="${inidir#/}/conf.d/.keep* usr/bin/*.dll usr/bin/php*
+              usr/include/ usr/lib/lib* usr/lib/php/build/ usr/share/doc/ usr/share/man/"
+php_PEAR_CONTENTS="${inidir#/}/pear.conf usr/bin/pe* usr/share/pear/"
+apache_mod_php5_CONTENTS='etc/p*/apache-mod_php5.sh usr/lib/apache/'
+apache2_mod_php5_CONTENTS='etc/p*/apache2-mod_php5.sh usr/lib/apache2/'
 
 # This method provides 50+ modules, so better automate this:
 for ext in $(echo ${cli_args} | sed -e 's# #\n#g' | grep shared \
@@ -176,36 +187,33 @@ for ext in $(echo ${cli_args} | sed -e 's# #\n#g' | grep shared \
 do
 	PKG_NAMES+=" php-${ext}"
 	PKG_HINTS+=" ${ext}"
-	PKG_CONTENTS[$((n++))]="${inidir#/}/conf.d/${ext}.ini usr/lib/php/*/${ext}.dll"
+	declare php_${ext}_CONTENTS="${inidir#/}/conf.d/${ext}.ini usr/lib/php/*/${ext}.dll"
 done
-
-unset ext n
+unset ext
 
 src_compile() {
 	cd ${S}
 
-	## libtoolize
+	#
+	# autotoolize
+	#
 	local lt_m4
-	local lt_macros="libtool.m4"
-	local lt_v=$(libtoolize --version | head -n 1 | cut -d ' ' -f 4)
 
-	case ${lt_v} in
-	1.5.*)	;;
-	2.2.*) 	lt_macros+=" ltoptions.m4 ltsugar.m4 ltversion.m4 lt~obsolete.m4" ;;
-	*)		error "php: unsupported libtool version: ${lt_v}" ;;
-	esac
-
-	libtoolize --force || error "libtoolize failed"  # ltmain.sh
+	# update ltmain.sh
+	libtoolize --force || error "libtoolize failed"
 
 	rm -f build/libtool.m4
-	for lt_m4 in ${lt_macros}
+	for lt_m4 in libtool.m4 ltoptions.m4 ltsugar.m4 ltversion.m4 lt~obsolete.m4
 	do
 		cat /usr/share/aclocal/${lt_m4} >> build/libtool.m4
 	done
 
 	cygmake -j1 -B -f build/build.mk ZENDDIR="Zend"
 
-	## build CLI and CGI
+
+	#
+	# build CLI and CGI
+	#
 	mkdir -p ${B}/cgi
 	cd ${B}/cgi
 	CYGCONF_SOURCE="${S}" cygconf ${common_args} ${cli_args}
@@ -218,13 +226,16 @@ src_compile() {
 	mkdir -p ext/sqlite/libsqlite/src
 
 	# first make the common sources library
-	cygmake cygwin/libphp${PV_MAJ}lib.la
+	cygmake cygwin/libphp${PV_MAJ}lib.la LDFLAGS="${LDFLAGS}"
 	sed -e 's#link=yes#link=no#' -i cygwin/libphp${PV_MAJ}lib.la
 
 	# then make everything else
-	cygmake
+	cygmake LDFLAGS="${LDFLAGS}"
 
+
+	#
 	# Apache (1.x) mod_php5 SAPI
+	#
 	mkdir -p ${B}/apache
 	cd ${B}/apache
 
@@ -238,13 +249,17 @@ src_compile() {
 		-i Makefile
 
 	cygmake libphp${PV_MAJ}.la \
+		LDFLAGS="${LDFLAGS}" \
 		PHP_GLOBAL_OBJS='' \
 		ZEND_EXTRA_LIBS="-Wl,${B}/cgi/cygwin/.libs/libphp${PV_MAJ}lib.dll.a"
 
 	# Makefile expects this to be named libphp5.dll
 	mv libs/{cyg,lib}php${PV_MAJ}.dll
 
+
+	#
 	# Apache2 mod_php5 SAPI
+	#
 	mkdir -p ${B}/apache2
 	cd ${B}/apache2
 
@@ -259,6 +274,7 @@ src_compile() {
 
 	# Apache2 expects mods to have .so suffix on all platforms
 	cygmake libphp${PV_MAJ}.la \
+		LDFLAGS="${LDFLAGS}" \
 		PHP_GLOBAL_OBJS='' \
 		ZEND_EXTRA_LIBS="-Wl,${B}/cgi/cygwin/.libs/libphp${PV_MAJ}lib.dll.a"
 }
@@ -291,11 +307,16 @@ src_install() {
 	dobin cygwin/.libs/cygphp${PV_MAJ}lib.dll
 	dolib cygwin/.libs/libphp${PV_MAJ}lib.dll.a
 
+	# The channel information is broken, see:
+	# http://www.pear-forum.org/post-5088.html
+	# pear will update these automatically if missing
+	rm -f ${D}/usr/share/pear/.channels/*.php.net
+
 	# fix PEAR for Cygwin
 	(cd ${D}/usr/share/pear && patch -p0 < ${C}/PEAR-cygwin.patch)
 
 	# sanitize php-config
-	sed -e 's#^libs=.*#libs="-lcrypt -lpcre -lresolv -lxml2"#' \
+	sed -e 's#^libs=.*#libs="-lcrypt -lpcre -lxml2"#' \
 		-e 's#^php_sapis=.*#php_sapis="cli cgi apache apache2handler"#' \
 		-i ${D}/usr/bin/php-config
 
@@ -310,4 +331,13 @@ src_install() {
 		n=${x##*/}
 		echo "extension = ${n}" > ${D}${inidir}/conf.d/${n/.dll/.ini}
 	done
+
+	# Un/load mod_php5 from httpd.conf on postinstall/preremove
+	dodir /etc/postinstall
+	echo "/usr/sbin/apxs -e -a -n php5 /usr/lib/apache/libphp5.dll" > ${D}/etc/postinstall/apache-mod_php5.sh
+	echo "/usr/sbin/apxs2 -e -a -n php5 /usr/lib/apache/cygphp5.so" > ${D}/etc/postinstall/apache2-mod_php5.sh
+
+	dodir /etc/preremove
+	echo "/usr/sbin/apxs -e -A -n php5 /usr/lib/apache/libphp5.dll" > ${D}/etc/preremove/apache-mod_php5.sh
+	echo "/usr/sbin/apxs2 -e -A -n php5 /usr/lib/apache/cygphp5.so" > ${D}/etc/preremove/apache2-mod_php5.sh
 }

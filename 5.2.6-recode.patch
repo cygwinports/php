@@ -1,0 +1,10 @@
+--- origsrc/php-5.2.6/ext/recode/config9.m4	2004-11-09 10:11:13.000000000 -0600
++++ src/php-5.2.6/ext/recode/config9.m4	2008-05-07 17:40:09.343750000 -0500
+@@ -8,6 +8,6 @@
+   test "$PHP_MYSQL" != "no" && recode_conflict="$recode_conflict mysql"
+ 
+   if test -n "$recode_conflict"; then
+-    AC_MSG_ERROR([recode extension can not be configured together with:$recode_conflict])
++    AC_MSG_WARN([recode extension can not be loaded together with:$recode_conflict])
+   fi
+ fi

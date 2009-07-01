@@ -1,0 +1,11 @@
+--- origsrc/php-5.2.6/ext/pspell/config.m4	2005-05-29 18:16:43.000000000 -0500
++++ src/php-5.2.6/ext/pspell/config.m4	2008-05-07 14:33:42.703125000 -0500
+@@ -29,8 +29,6 @@
+ 
+ 	PSPELL_LIBDIR=$PSPELL_DIR/$PHP_LIBDIR
+ 
+-	PHP_ADD_LIBRARY_WITH_PATH(pspell, $PSPELL_LIBDIR, PSPELL_SHARED_LIBADD)
+-
+ 	dnl Add -laspell to LIBS if it exists
+ 	PHP_CHECK_LIBRARY(aspell,new_aspell_config,
+ 	[
