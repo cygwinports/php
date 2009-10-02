@@ -101,10 +101,9 @@ cli_args="
   --enable-json=shared
   --with-ldap=shared,/usr
   --with-ldap-sasl=/usr
-  --enable-mbstring=no
+  --enable-mbstring=shared
   --enable-mbregex=yes
   --enable-mbregex_backtrack=yes
-  --with-libmbfl=/usr
   --with-mcrypt=shared,/usr
   --with-mhash=shared,/usr
   --with-mime-magic=shared,/usr/share/file/magic.mgc
@@ -313,7 +312,7 @@ src_install() {
 	rm -f ${D}/usr/share/pear/.channels/*.php.net
 
 	# fix PEAR for Cygwin
-	(cd ${D}/usr/share/pear && patch -p0 < ${C}/PEAR-cygwin.patch)
+	(cd ${D}/usr/share/pear && patch -p0 < ${C}/PEAR-cygwin.patch) || error
 
 	# sanitize php-config
 	sed -e 's#^libs=.*#libs="-lcrypt -lpcre -lxml2"#' \
