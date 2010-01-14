@@ -9,6 +9,7 @@ PATCH_URI="
 	5.2.6-pspell.patch
 	5.2.6-sapi-build.patch
 	5.2.6-xmlrpc-epi.patch
+	5.2.12-autoconf264.patch
 "
 #	5.2.6-ming.patch
 #	5.2.6-odbc32.patch

@@ -1,0 +1,76 @@
+--- origsrc/php-5.2.12/configure.in	2010-01-14 05:00:04.031984000 -0600
++++ src/php-5.2.12/configure.in	2010-01-14 12:56:57.211564300 -0600
+@@ -1,7 +1,7 @@
+ ## $Id: configure.in 292200 2009-12-16 12:45:18Z iliaa $ -*- autoconf -*-
+ dnl ## Process this file with autoconf to produce a configure script.
+ 
+-divert(1)
++divert(6001)
+ 
+ dnl ## Diversion 1 is the autoconf + automake setup phase. We also
+ dnl ## set the PHP version, deal with platform-specific compile
+@@ -263,7 +263,7 @@ sinclude(TSRM/threads.m4)
+ sinclude(TSRM/tsrm.m4)
+ 
+ 
+-divert(2)
++divert(6002)
+ 
+ dnl ## Diversion 2 is where we set PHP-specific options and come up
+ dnl ## with reasonable default values for them. We check for pthreads here
+@@ -302,7 +302,7 @@ if test "$enable_maintainer_zts" = "yes"
+   PTHREADS_FLAGS
+ fi
+ 
+-divert(3)
++divert(6003)
+ 
+ dnl ## In diversion 3 we check for compile-time options to the PHP
+ dnl ## core and how to deal with different system dependencies.
+@@ -663,7 +663,7 @@ if test "x$php_crypt_r" = "x1"; then
+   PHP_CRYPT_R_STYLE
+ fi
+ 
+-divert(4)
++divert(6004)
+ 
+ dnl ## In diversion 4 we check user-configurable general settings.
+ 
+@@ -904,7 +904,7 @@ else
+   AC_MSG_RESULT([using system default])
+ fi
+ 
+-divert(5)
++divert(6005)
+ 
+ dnl ## In diversion 5 we check which extensions should be compiled.
+ dnl ## All of these are normally in the extension directories.
+--- origsrc/php-5.2.12/ext/standard/config.m4	2009-11-27 17:41:13.000000000 -0600
++++ src/php-5.2.12/ext/standard/config.m4	2010-01-14 12:59:43.648083900 -0600
+@@ -1,6 +1,6 @@
+ dnl $Id: config.m4 291364 2009-11-27 23:41:13Z rasmus $ -*- autoconf -*-
+ 
+-divert(3)dnl
++divert(6003)dnl
+ 
+ dnl
+ dnl Check if flush should be called explicitly after buffered io
+@@ -205,7 +205,7 @@ dnl
+ AC_CHECK_FUNCS(getcwd getwd asinh acosh atanh log1p hypot glob strfmon nice fpclass isinf isnan)
+ AC_FUNC_FNMATCH	
+ 
+-divert(5)dnl
++divert(6005)dnl
+ 
+ dnl
+ dnl Check for regex library type
+--- origsrc/php-5.2.12/scripts/phpize.m4	2009-11-27 06:51:41.000000000 -0600
++++ src/php-5.2.12/scripts/phpize.m4	2010-01-14 13:00:01.608111200 -0600
+@@ -1,6 +1,6 @@
+ dnl This file becomes configure.in for self-contained extensions.
+ 
+-divert(1)
++divert(6001)
+ 
+ AC_PREREQ(2.13)
+ AC_INIT(config.m4)
