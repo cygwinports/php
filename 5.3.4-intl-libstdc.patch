@@ -1,0 +1,10 @@
+--- origsrc/php-5.3.4/ext/intl/config.m4	2010-01-04 15:44:45.000000000 -0600
++++ src/php-5.3.4/ext/intl/config.m4	2011-01-02 09:11:31.792552800 -0600
+@@ -9,6 +9,7 @@ if test "$PHP_INTL" != "no"; then
+   PHP_SETUP_ICU(INTL_SHARED_LIBADD)
+   PHP_SUBST(INTL_SHARED_LIBADD)
+   PHP_REQUIRE_CXX()
++  PHP_ADD_LIBRARY(stdc++, 1, INTL_SHARED_LIBADD)
+ 
+   PHP_NEW_EXTENSION(intl, php_intl.c \
+     intl_error.c \

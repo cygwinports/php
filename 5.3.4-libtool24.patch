@@ -1,0 +1,19 @@
+--- origsrc/php-5.3.4/configure.in	2010-12-08 15:38:51.000000000 -0600
++++ src/php-5.3.4/configure.in	2011-01-02 21:28:34.082290500 -0600
+@@ -1333,14 +1333,8 @@ case $host_alias in
+   ;;
+ esac
+ 
+-dnl Only allow AC_PROG_CXX and AC_PROG_CXXCPP if they are explicitly called (by PHP_REQUIRE_CXX).
+-dnl Otherwise AC_PROG_LIBTOOL fails if there is no working C++ compiler.
+-AC_PROVIDE_IFELSE([PHP_REQUIRE_CXX], [], [
+-  undefine([AC_PROG_CXX])
+-  AC_DEFUN([AC_PROG_CXX], [])
+-  undefine([AC_PROG_CXXCPP])
+-  AC_DEFUN([AC_PROG_CXXCPP], [php_prog_cxxcpp=disabled])
+-])
++AC_PROG_CXX
++AC_PROG_CXXCPP
+ AC_PROG_LIBTOOL
+ 
+ if test "$enable_debug" != "yes"; then

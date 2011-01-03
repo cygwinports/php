@@ -1,6 +1,6 @@
---- origsrc/php-5.2.6/ext/xmlrpc/config.m4	2005-11-29 12:26:02.000000000 -0600
-+++ src/php-5.2.6/ext/xmlrpc/config.m4	2008-05-07 21:53:48.359375000 -0500
-@@ -112,7 +112,7 @@
+--- origsrc/php-5.3.4/ext/xmlrpc/config.m4	2009-04-27 12:49:32.000000000 -0500
++++ src/php-5.3.4/ext/xmlrpc/config.m4	2010-12-29 23:23:20.000000000 -0600
+@@ -116,7 +116,7 @@ dnl for xmlrpc-epi because of this.
    fi
  
    PHP_ADD_INCLUDE($XMLRPC_DIR)

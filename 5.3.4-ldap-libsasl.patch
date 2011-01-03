@@ -1,6 +1,6 @@
---- origsrc/php-5.2.6/ext/ldap/config.m4	2007-08-08 06:37:44.000000000 -0500
-+++ src/php-5.2.6/ext/ldap/config.m4	2008-05-07 14:33:42.640625000 -0500
-@@ -50,7 +50,7 @@
+--- origsrc/php-5.3.4/ext/ldap/config.m4	2007-09-26 10:44:16.000000000 -0500
++++ src/php-5.3.4/ext/ldap/config.m4	2010-12-29 23:23:14.000000000 -0600
+@@ -50,7 +50,7 @@ AC_DEFUN([PHP_LDAP_SASL_CHECKS], [
      SASL_LIB="-L$LDAP_SASL_LIBDIR -lsasl2"
    fi
    
