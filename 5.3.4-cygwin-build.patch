@@ -59,7 +59,7 @@
    PHP_UNAME=`uname -a | xargs`
    AC_DEFINE_UNQUOTED(PHP_UNAME,"$PHP_UNAME",[uname -a output])
 -  PHP_OS=`uname | xargs`
-+  PHP_OS=`uname | xargs | sed -e 's/[-_ ].*//'`
++  PHP_OS=`uname | xargs | sed -e 's/[[-_ ]].*//'`
    AC_DEFINE_UNQUOTED(PHP_OS,"$PHP_OS",[uname output])
    ;;
  esac

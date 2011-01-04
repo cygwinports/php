@@ -1,4 +1,4 @@
-inherit apache1 apache2
+inherit apache2
 
 DESCRIPTION="PHP Hyptertext Preprocessor"
 HOMEPAGE="http://www.php.net/"
@@ -22,8 +22,7 @@ DIFF_EXCLUDES="aclocal.m4 configure libtool.m4 ltmain.sh php_config.h.in tests"
 # $ grep -h 'ADD_EXTENSION_DEP(' ${S}/ext/*/config.m4 | sed -e 's@^ *@# @g'
 # date, dom, filter, hash, libxml, openssl, pcre, pdo, xml
 #
-# Like Debian, build shared only those modules with additional deps, or
-# those with builtin external libraries.
+# Like Debian, build shared only those modules with additional deps.
 # libxml2 already depends on libiconv and zlib.
 # glibc includes a gettext implementation, so we build in 'gettext' as well.
 
@@ -47,6 +46,7 @@ common_args="
   --enable-ctype=yes
   --enable-dom=yes
   --enable-exif=yes
+  --enable-fileinfo=yes
   --enable-filter=yes
   --enable-ftp=yes
   --with-gettext=yes
@@ -92,7 +92,6 @@ cli_args="
   --enable-inifile
   --enable-flatfile
   --with-enchant=shared,/usr
-  --enable-fileinfo=shared
   --with-gd=shared,/usr
   --with-jpeg-dir=/usr
   --with-png-dir=/usr
@@ -161,14 +160,13 @@ cli_args="
 
 # packaging
 #
-PKG_NAMES="${PN} php-PEAR apache-mod_php${PV_MAJ} apache2-mod_php${PV_MAJ}"
-PKG_HINTS="${PN} PEAR apache apache2"
+PKG_NAMES="${PN} php-PEAR apache2-mod_php${PV_MAJ}"
+PKG_HINTS="${PN} PEAR apache2"
 php_CONTENTS="etc/defaults/ ${inidir#/}/conf.d/.keep* etc/p*/php.* usr/bin/*.dll
               usr/bin/ph* usr/include/ usr/lib/lib* usr/lib/php/build/
               usr/share/doc/ usr/share/man/"
 php_PEAR_CONTENTS="usr/bin/pe* usr/share/pear/"
-apache_mod_php5_CONTENTS="etc/p*/apache-mod_php5.sh ${APACHE1_LIBEXECDIR#/}"
-apache2_mod_php5_CONTENTS="etc/p*/apache2-mod_php5.sh ${APACHE2_LIBEXECDIR#/}"
+apache2_mod_php5_CONTENTS="${APACHE2_SYSCONFDIR#/} etc/p*/apache2-*.sh ${APACHE2_LIBEXECDIR#/}"
 
 # This method provides 30+ modules, so better automate this:
 for ext in $(echo ${cli_args} | sed -e 's# #\n#g' | grep shared \
@@ -208,6 +206,7 @@ src_compile() {
 	CYGCONF_SOURCE="${S}" cygconf ${common_args} ${cli_args} --enable-embed
 
 	sed -e '/^LTCFLAGS=/d' -i libtool
+	sed -e 's/ -lphp5 / libphp5.la /g' -i Makefile
 
 	# first make the common sources library
 	cygmake libphp${PV_MAJ}.la
@@ -248,29 +247,6 @@ src_compile() {
 
 
 	#
-	# Apache (1.x) mod_php5 SAPI
-	#
-	mkdir -p ${B}/apache
-	cd ${B}/apache
-
-	CYGCONF_SOURCE="${S}" cygconf \
-		--disable-all --disable-cli --with-apxs=${APXS} ${common_args}
-
-	# the -a flag adds the module to httpd.conf
-	sed -e 's#-prefer-non-pic -static##g' \
-		-e 's#-prefer-pic##g' \
-		-e 's#-i -a -n#-i -n#g' \
-		-i Makefile
-
-	cygmake libphp${PV_MAJ}.la \
-		PHP_GLOBAL_OBJS='' \
-		ZEND_EXTRA_LIBS="${B}/embed/libphp${PV_MAJ}.la"
-
-	# Makefile expects this to be named libphp5.dll
-	mv libs/{cyg,lib}php${PV_MAJ}.dll
-
-
-	#
 	# Apache2 mod_php5 SAPI
 	#
 	mkdir -p ${B}/apache2
@@ -302,7 +278,7 @@ src_install() {
 	local n sapi x xdir
 
 	# install the SAPIs
-	for sapi in cgi fpm apache apache2
+	for sapi in cgi fpm apache2
 	do
 		cd ${B}/${sapi}
 		cygmake -j1 install-sapi INSTALL_ROOT=${D} PHP_GLOBAL_OBJS=''
@@ -325,11 +301,13 @@ src_install() {
 	rm -f ${D}/usr/share/pear/.channels/*.php.net
 
 	# fix PEAR for Cygwin
-	(cd ${D}/usr/share/pear && cygpatch ${C}/PEAR-cygwin.patch) || error
+	pushd ${D}/usr/share/pear
+	cygpatch ${C}/PEAR-cygwin.patch
+	popd
 
 	# sanitize php-config
-	sed -e 's#^libs=.*#libs="-lphp"#' \
-		-e 's#^php_sapis=.*#php_sapis="cli cgi embed fpm apache apache2handler"#' \
+	sed -e "s#^libs=.*#libs=\"-lphp${PV_MAJ}\"#" \
+		-e 's#^php_sapis=.*#php_sapis="cli cgi embed fpm apache2handler"#' \
 		-i ${D}/usr/bin/php-config
 
 	# provide default php.ini
@@ -349,11 +327,15 @@ src_install() {
 	done
 
 	# Un/load mod_php5 from httpd.conf on postinstall/preremove
-	dodir /etc/postinstall
-	echo "${APXS} -e -a -n php5 ${APACHE1_LIBEXECDIR}/libphp5.dll" > ${D}/etc/postinstall/apache-mod_php5.sh
+	dodir /etc/postinstall /etc/preremove ${APACHE2_SYSCONFDIR}
 	echo "${APXS2} -e -a -n php5 ${APACHE2_LIBEXECDIR}/cygphp5.so" > ${D}/etc/postinstall/apache2-mod_php5.sh
-
-	dodir /etc/preremove
-	echo "${APXS} -e -A -n php5 ${APACHE1_LIBEXECDIR}/libphp5.dll" > ${D}/etc/preremove/apache-mod_php5.sh
 	echo "${APXS2} -e -A -n php5 ${APACHE2_LIBEXECDIR}/cygphp5.so" > ${D}/etc/preremove/apache2-mod_php5.sh
+
+	cat > ${D}${APACHE2_SYSCONFDIR}/mod_php5.conf <<_EOF
+<IfModule php5_module>
+    AddType application/x-httpd-php .php .phtml
+    AddType application/x-httpd-php-source .phps
+</IfModule>
+_EOF
+
 }
