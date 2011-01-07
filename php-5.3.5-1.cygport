@@ -79,7 +79,7 @@ common_args="
 "
 
 cli_args="
-  --with-pear
+  --without-pear
 
   --with-bz2=shared,/usr
   --with-curl=shared,/usr
@@ -160,12 +160,10 @@ cli_args="
 
 # packaging
 #
-PKG_NAMES="${PN} php-PEAR apache2-mod_php${PV_MAJ}"
-PKG_HINTS="${PN} PEAR apache2"
-php_CONTENTS="etc/defaults/ ${inidir#/}/conf.d/.keep* etc/p*/php.* usr/bin/*.dll
-              usr/bin/ph* usr/include/ usr/lib/lib* usr/lib/php/build/
-              usr/share/doc/ usr/share/man/"
-php_PEAR_CONTENTS="usr/bin/pe* usr/share/pear/"
+PKG_NAMES="${PN} apache2-mod_php${PV_MAJ}"
+PKG_HINTS="${PN} apache2"
+php_CONTENTS="etc/defaults/ ${inidir#/}/conf.d/.keep* etc/p*/php.* usr/bin/
+              usr/include/ usr/lib/lib* usr/lib/php/build/ usr/share/"
 apache2_mod_php5_CONTENTS="${APACHE2_SYSCONFDIR#/} etc/p*/apache2-*.sh ${APACHE2_LIBEXECDIR#/}"
 
 # This method provides 30+ modules, so better automate this:
@@ -284,7 +282,7 @@ src_install() {
 		cygmake -j1 install-sapi INSTALL_ROOT=${D} PHP_GLOBAL_OBJS=''
 	done
 
-	# install CLI, PEAR, build environment, and everything else
+	# install CLI, build environment, and everything else
 	cd ${B}/embed
 	cygmake -j1 install INSTALL_ROOT=${D} INSTALL_IT=
 	# install the shared lib (normally done by INSTALL_IT)
@@ -295,16 +293,6 @@ src_install() {
 	cd ${B}
 	dobin */sapi/*/*.exe
 
-	# The channel information is broken, see:
-	# http://www.pear-forum.org/post-5088.html
-	# pear will update these automatically if missing
-	rm -f ${D}/usr/share/pear/.channels/*.php.net
-
-	# fix PEAR for Cygwin
-	pushd ${D}/usr/share/pear
-	cygpatch ${C}/PEAR-cygwin.patch
-	popd
-
 	# sanitize php-config
 	sed -e "s#^libs=.*#libs=\"-lphp${PV_MAJ}\"#" \
 		-e 's#^php_sapis=.*#php_sapis="cli cgi embed fpm apache2handler"#' \
@@ -313,7 +301,7 @@ src_install() {
 	# provide default php.ini
 	insinto ${inidir}
 	newins ${S}/php.ini-production php.ini
-	make_etc_defaults ${inidir}/php.ini ${inidir}/pear.conf
+	make_etc_defaults ${inidir}/php.ini
 
 	# add .ini files for each extension, so that it's loaded once installed
 	xdir=$(${D}/usr/bin/php-config --extension-dir)
