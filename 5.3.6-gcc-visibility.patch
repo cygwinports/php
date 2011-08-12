@@ -1,0 +1,17 @@
+--- origsrc/php-5.3.6/configure.in	2011-08-11 17:46:09.844202000 -0500
++++ src/php-5.3.6/configure.in	2011-08-11 18:32:29.523190500 -0500
+@@ -218,7 +218,13 @@ if test "$GCC" = "yes"; then
+     ;;
+   esac
+   if test $GCC_MAJOR_VERSION -ge 4; then
+-    CFLAGS="$CFLAGS -fvisibility=hidden"
++    case $host_alias in
++    *cygwin*|*mingw*)
++      ;;
++    *)
++      CFLAGS="$CFLAGS -fvisibility=hidden"
++      ;;
++    esac
+   fi
+ fi
+ 

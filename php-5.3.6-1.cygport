@@ -12,6 +12,7 @@ PATCH_URI="
 	5.3.4-ldap-libsasl.patch
 	5.3.4-pspell-libpspell.patch
 	5.3.4-xmlrpc-epi.patch
+	5.3.6-gcc-visibility.patch
 "
 
 DIFF_EXCLUDES="aclocal.m4 configure libtool.m4 ltmain.sh php_config.h.in tests"
