@@ -5,7 +5,7 @@ HOMEPAGE="http://www.php.net/"
 SRC_URI="http://www.php.net/distributions/${P}.tar.bz2"
 PATCH_URI="
 	5.3.4-cygwin-build.patch
-	5.3.4-autoconf264.patch
+	5.3.8-autoconf264.patch
 	5.3.4-libtool24.patch
 	5.3.4-dba-gdbm_compat.patch
 	5.3.4-intl-libstdc.patch

@@ -1,3 +1,14 @@
+--- origsrc/php-5.3.8/build/buildcheck.sh	2011-05-18 14:55:34.000000000 -0500
++++ src/php-5.3.8/build/buildcheck.sh	2011-09-20 21:03:41.369973800 -0500
+@@ -44,7 +44,7 @@ echo "           to build PHP from SVN."
+ exit 1
+ fi
+ 
+-if test "$1" = "2" -a "$2" -gt "59"; then
++if false; then
+   echo "buildconf: You need autoconf 2.59 or lower to build this version of PHP."
+   echo "           You are currently trying to use $ac_version"
+   echo "           Most distros have separate autoconf 2.13 or 2.59 packages."
 --- origsrc/php-5.3.4/configure.in	2010-12-08 15:38:51.000000000 -0600
 +++ src/php-5.3.4/configure.in	2011-01-02 21:28:34.082290500 -0600
 @@ -1,7 +1,7 @@
