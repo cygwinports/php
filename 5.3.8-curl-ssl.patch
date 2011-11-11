@@ -1,0 +1,33 @@
+--- origsrc/php-5.3.8/ext/curl/config.m4	2009-07-25 15:58:51.000000000 -0500
++++ src/php-5.3.8/ext/curl/config.m4	2011-11-08 19:10:49.767388500 -0600
+@@ -60,11 +60,14 @@ if test "$PHP_CURL" != "no"; then
+     AC_DEFINE([HAVE_CURL_SSL], [1], [Have cURL with  SSL support])
+    
+     save_CFLAGS="$CFLAGS"
++    save_LIBS="$LIBS"
+     CFLAGS="`$CURL_CONFIG --cflags`"
++    LIBS="`$CURL_CONFIG --libs`"
+    
+     AC_PROG_CPP
+     AC_MSG_CHECKING([for openssl support in libcurl])
+     AC_TRY_RUN([
++#include <string.h>
+ #include <curl/curl.h>
+ 
+ int main(int argc, char *argv[])
+@@ -92,6 +95,7 @@ int main(int argc, char *argv[])
+    
+     AC_MSG_CHECKING([for gnutls support in libcurl])
+     AC_TRY_RUN([
++#include <string.h>
+ #include <curl/curl.h>
+ 
+ int main(int argc, char *argv[])
+@@ -118,6 +122,7 @@ int main(int argc, char *argv[])
+     ])
+    
+     CFLAGS="$save_CFLAGS"
++    LIBS="$save_LIBS"
+   else
+     AC_MSG_RESULT([no])
+   fi

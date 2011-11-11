@@ -1,6 +1,7 @@
-category: Interpreters PHP
-requires: crypt libgcc1 libopenssl098 libpcre0 libxml2 zlib0
-sdesc: "PHP Hypertext Preprocessor (CLI, CGI, and FastCGI interpreters)"
+category: PHP
+requires: php
+external-source: php
+sdesc: "PHP mysql (native driver) extension"
 ldesc: "PHP (recursive acronym for 'PHP: Hypertext Preprocessor') is a
 widely-used Open Source general-purpose scripting language that is
 especially suited for Web development and can be embedded into HTML."

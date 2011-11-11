@@ -1,0 +1,397 @@
+inherit apache2
+
+DESCRIPTION="PHP Hyptertext Preprocessor"
+HOMEPAGE="http://www.php.net/"
+SRC_URI="http://www.php.net/distributions/${P}.tar.bz2"
+SRC_URI+=" template-builtin.reg template-ext.reg"
+PATCH_URI="
+	5.3.4-cygwin-build.patch
+	5.3.8-autoconf264.patch
+	5.3.4-libtool24.patch
+	5.3.8-curl-ssl.patch
+	5.3.4-dba-gdbm_compat.patch
+	5.3.4-intl-libstdc.patch
+	5.3.4-pspell-libpspell.patch
+	5.3.8-readline-funcs.patch
+	5.3.6-gcc-visibility.patch
+"
+
+DIFF_EXCLUDES="aclocal.m4 configure libtool.m4 lt*.m4 ltmain.sh php_config.h.in tests"
+
+# EXTENSIONS:
+#
+# The following modules are deps for others, and hence MUST be builtin:
+# date: intl
+# dom: xmlreader xsl
+# filter: (mandatory built-in)
+# hash: phar, session
+# intl: sqlite3 and pdo_sqlite (optional and only with bundled libsqlite3)
+# libxml: simplexml, soap, xsl
+# mysqlnd: mysql, mysqli, pdo_mysql (if configured to use mysqlnd)
+# openssl: phar
+# pcre: fileinfo
+# pdo: pdo_*
+# xml: xmlrpc
+
+# location of php.ini files
+inidir=/etc/php${PV_MAJ}
+
+# required for all configure runs
+common_args="
+  --cache-file=../config.cache
+  --sysconfdir=${inidir}
+
+  --disable-static
+  --disable-rpath
+  --with-config-file-path=${inidir}
+  --with-config-file-scan-dir=${inidir}/conf.d
+  --with-layout=GNU
+  --with-regex=system
+
+  --enable-dom=yes
+  --enable-filter=yes
+  --enable-hash=yes
+  --enable-libxml=yes
+  --with-openssl=yes
+  --enable-pdo=yes
+  --enable-xml=yes
+  --with-libxml-dir=/usr
+  --with-openssl-dir=/usr
+  --with-pcre-dir=/usr
+  --with-pcre-regex=/usr
+"
+
+cli_args="
+  --without-pear
+
+  --enable-bcmath=shared
+  --with-bz2=shared,/usr
+  --enable-calendar=shared
+  --enable-ctype=shared
+  --with-curl=shared,/usr
+  --enable-dba=shared
+  --with-gdbm=/usr
+  --with-ndbm=/usr
+  --with-db4=/usr
+  --with-dbm=/usr
+  --with-cdb
+  --enable-inifile
+  --enable-flatfile
+  --with-enchant=shared,/usr
+  --enable-exif=shared
+  --enable-fileinfo=shared
+  --enable-ftp=shared
+  --with-gd=shared,/usr
+  --with-jpeg-dir=/usr
+  --with-png-dir=/usr
+  --with-zlib-dir=/usr
+  --with-xpm-dir=/usr
+  --with-freetype-dir=/usr
+  --with-t1lib=/usr
+  --with-gettext=shared
+  --with-gmp=shared,/usr
+  --with-iconv=shared,/usr
+  --with-imap=no
+  --with-kerberos=no
+  --with-imap-ssl=no
+  --with-interbase=no
+  --with-ldap=shared,/usr
+  --with-ldap-sasl=/usr
+  --enable-intl=shared
+  --with-icu-dir=/usr
+  --enable-json=shared
+  --enable-mbstring=shared
+  --with-onig=/usr
+  --enable-mbregex=yes
+  --enable-mbregex_backtrack=yes
+  --with-mcrypt=shared,/usr
+  --with-mssql=shared,/usr
+  --with-mysql=shared,mysqlnd
+  --with-mysql-sock=/var/run/mysql.sock
+  --with-mysqli=shared,mysqlnd
+  --enable-embedded_mysqli=no
+  --with-oci8=no
+  --with-adabas=no
+  --with-sapdb=no
+  --with-solid=no
+  --with-ibm-db2=no
+  --with-ODBCRouter=no
+  --with-empress=no
+  --with-empress-bcs=no
+  --with-birdstep=no
+  --with-custom-odbc=no
+  --with-iodbc=shared,/usr
+  --with-esoob=no
+  --with-unixODBC=no
+  --with-dbmaker=no
+  --enable-pcntl=no
+  --with-pdo-dblib=shared,/usr
+  --with-pdo-firebird=no
+  --with-pdo-mysql=shared,mysqlnd
+  --with-pdo-oci=no
+  --with-pdo-odbc=shared,iodbc,/usr
+  --with-pdo-pgsql=shared,/usr
+  --with-pdo-sqlite=shared,/usr
+  --with-pgsql=shared,/usr
+  --enable-phar=shared
+  --enable-posix=shared
+  --with-pspell=shared,/usr
+  --with-libedit=no
+  --with-readline=shared,/usr
+  --with-recode=no
+  --with-mm=no
+  --enable-session=shared
+  --enable-shmop=shared
+  --enable-simplexml=shared
+  --with-snmp=no
+  --enable-ucd-snmp-hack=no
+  --enable-soap=shared
+  --with-sqlite=no
+  --with-sqlite3=shared,/usr
+  --with-sybase-ct=shared,/usr
+  --enable-sockets=shared
+  --enable-sysvmsg=shared
+  --enable-sysvsem=shared
+  --enable-sysvshm=shared
+  --with-tidy=shared,/usr
+  --enable-tokenizer=shared
+  --enable-wddx=shared
+  --enable-xmlreader=shared
+  --with-xmlrpc=shared
+  --with-iconv-dir=/usr
+  --enable-xmlwriter=shared
+  --with-xsl=shared,/usr
+  --enable-zip=shared,/usr
+  --with-zlib=shared
+"
+
+# packaging
+#
+PKG_NAMES="${PN} apache2-mod_php${PV_MAJ}"
+php_CONTENTS="etc/defaults/ ${inidir#/}/conf.d/.keep* etc/p*/php.*
+              usr/bin/cygphp5.dll usr/bin/php* usr/include/ usr/lib/lib*
+              usr/lib/php/build/ usr/share/doc/ usr/share/man/
+              usr/share/pear/.registry/.channel.*/filter.reg
+              usr/share/pear/.registry/.channel.*/hash.reg
+              usr/share/pear/.registry/.channel.*/pdo.reg
+              usr/share/pear/doc/filter/CREDITS
+              usr/share/pear/doc/hash/CREDITS
+              usr/share/pear/doc/pdo/CREDITS"
+apache2_mod_php5_CONTENTS="${APACHE2_SYSCONFDIR#/} etc/p*/apache2-*.sh ${APACHE2_LIBEXECDIR#/}"
+
+# This method provides 50+ modules, so better automate this:
+for ext in $(echo ${cli_args} | sed -e 's# #\n#g' | grep shared \
+             | sed -e 's#^--[a-z]*-##g' -e 's#=.*##g' -e 's#-#_#g' -e 's#[a-z]*odbc#odbc#')
+do
+	PKG_NAMES+=" php-${ext}"
+	declare php_${ext}_CONTENTS="${inidir#/}/conf.d/${ext}.ini
+				     usr/lib/php/*/${ext}.dll
+				     usr/share/pear/doc/${ext}/
+				     usr/share/pear/.registry/.channel.*/${ext}.reg"
+done
+php_phar_CONTENTS+=" usr/bin/phar*"
+unset ext
+
+src_compile() {
+	cd ${S}
+
+	#
+	# autotoolize
+	#
+	rm -f build/libtool.m4
+	ac_macrodir=build libtoolize --copy --force || error "libtoolize failed"
+	cat build/lt*.m4 >> build/libtool.m4
+
+	cygmake -j1 -B -f build/build.mk ZENDDIR="Zend"
+
+
+	#
+	# build runtime and CLI
+	#
+	mkdir -p ${B}/embed
+	cd ${B}/embed
+	CYGCONF_SOURCE="${S}" cygconf ${common_args} ${cli_args} --enable-embed
+
+	sed -e '/^LTCFLAGS=/d' -i libtool
+	sed -e 's/ -lphp5 / libphp5.la /g' -i Makefile
+
+	# first make the common sources library
+	cygmake libphp${PV_MAJ}.la
+	sed -e 's#link=yes#link=no#' -i libphp${PV_MAJ}.la
+
+	# then make everything else
+	cygmake \
+		PHP_GLOBAL_OBJS='' \
+		ZEND_EXTRA_LIBS="${B}/embed/libphp${PV_MAJ}.la"
+
+
+	#
+	# CGI SAPI
+	#
+	mkdir -p ${B}/cgi
+	cd ${B}/cgi
+	CYGCONF_SOURCE="${S}" cygconf --disable-all --disable-cli --enable-cgi ${common_args}
+
+	sed -e '/^LTCFLAGS=/d' -i libtool
+
+	cygmake sapi/cgi/php-cgi.exe \
+		PHP_GLOBAL_OBJS='' \
+		ZEND_EXTRA_LIBS="${B}/embed/libphp${PV_MAJ}.la"
+
+
+	#
+	# FastCGI Process Manager SAPI
+	#
+	mkdir -p ${B}/fpm
+	cd ${B}/fpm
+	CYGCONF_SOURCE="${S}" cygconf --disable-all --disable-cli --enable-fpm ${common_args}
+
+	sed -e '/^LTCFLAGS=/d' -i libtool
+
+	cygmake sapi/fpm/php-fpm.exe \
+		PHP_GLOBAL_OBJS='' \
+		ZEND_EXTRA_LIBS="${B}/embed/libphp${PV_MAJ}.la"
+
+
+	#
+	# Apache2 mod_php5 SAPI
+	#
+	mkdir -p ${B}/apache2
+	cd ${B}/apache2
+
+	CYGCONF_SOURCE="${S}" cygconf \
+		--disable-all --disable-cli --with-apxs2=${APXS2} ${common_args}
+
+	# the -a flag adds the module to httpd.conf
+	sed -e 's#-prefer-non-pic -static##g' \
+		-e 's#-prefer-pic##g' \
+		-e 's#-i -a -n#-i -n#g' \
+		-i Makefile
+
+	# Apache2 expects mods to have .so suffix on all platforms
+	cygmake libphp${PV_MAJ}.la \
+		PHP_GLOBAL_OBJS='' \
+		ZEND_EXTRA_LIBS="${B}/embed/libphp${PV_MAJ}.la"
+}
+
+src_test() {
+	export PATH="${B}/embed/.libs:$PATH"
+
+	cd ${B}/embed
+	cygmake -j1 test
+}
+
+src_install() {
+	local n sapi x xdir
+
+	# install the SAPIs
+	for sapi in cgi fpm apache2
+	do
+		cd ${B}/${sapi}
+		cygmake -j1 install-sapi INSTALL_ROOT=${D} PHP_GLOBAL_OBJS=''
+	done
+
+	# install CLI, build environment, and everything else
+	cd ${B}/embed
+	cygmake -j1 install INSTALL_ROOT=${D} INSTALL_IT=
+	# install the shared lib (normally done by INSTALL_IT)
+	dobin libs/cygphp${PV_MAJ}.dll
+	dolib libs/libphp${PV_MAJ}.dll.a
+
+	# install the real executables, not the libtool stubs
+	cd ${B}
+	dobin */sapi/*/*.exe
+
+	# sanitize php-config
+	sed -e "s#^libs=.*#libs=\"-lphp${PV_MAJ}\"#" \
+		-e 's#^php_sapis=.*#php_sapis="cli cgi embed fpm apache2handler"#' \
+		-i ${D}/usr/bin/php-config
+
+	# provide default php.ini
+	insinto ${inidir}
+	newins ${S}/php.ini-production php.ini
+	make_etc_defaults ${inidir}/php.ini
+
+	# add .ini files for each extension, so that it's loaded once installed
+	local date=$(date +%F)
+	local time=$(date +%T)
+	local timestamp=$(date +%s)
+	local regdir=/usr/share/pear/.registry/.channel.pecl.php.net
+	local xdir=$(${D}/usr/bin/php-config --extension-dir)
+	local dll ext docdir path_len summary_len p
+
+	keepdir ${inidir}/conf.d
+	dodir ${regdir}
+
+	for x in ${D}${xdir}/*.dll
+	do
+		dll=${x##*/}
+		ext=${dll%.dll}
+		docdir=/usr/share/pear/doc/${ext}
+		doc_len=$((${#docdir} + 8))	# /CREDITS
+		path_len=$((${#xdir} + ${#dll} + 1))
+		summary_len=$((${#ext} + 14))	# PHP ___ extension
+
+		# create .ini file for automatic extension loading
+		echo "extension = ${dll}" >> ${D}${inidir}/conf.d/${ext}.ini
+
+		# register extension with pecl to prevent accidental
+		# installation of obsolete versions
+		insinto ${docdir}
+		doins ${S}/ext/${ext}/CREDITS
+
+		sed -e "s,@DATE@,${date},g;
+			s,@DOCDIR@,${docdir},g;
+			s,@DOC_LEN@,${doc_len},g;
+			s,@DLL@,${dll},g;
+			s,@DLL_LEN@,${#dll},g;
+			s,@EXT@,${ext},g;
+			s,@EXT_LEN@,${#ext},g;
+			s,@PATH@,${xdir}/${dll},g;
+			s,@PATH_LEN@,${path_len},g;
+			s,@SUMMARY_LEN@,${summary_len},g;
+			s,@TIME@,${time},g;
+			s,@VERSION@,${PV},g;
+			s,@VERSION_LEN@,${#PV},g;
+			s,@TIMESTAMP@,${timestamp}," \
+			${S}/template-ext.reg > ${D}${regdir}/${ext}.reg
+	done
+
+	# builtin extensions
+	for ext in filter hash pdo
+	do
+		docdir=/usr/share/pear/doc/${ext}
+		doc_len=$((${#docdir} + 8))	# /CREDITS
+		summary_len=$((${#ext} + 22))	# PHP ___ builtin extension
+
+		# register extension with pecl to prevent accidental
+		# installation of obsolete versions
+		insinto ${docdir}
+		doins ${S}/ext/${ext}/CREDITS
+
+		sed -e "s,@DATE@,${date},g;
+			s,@DOCDIR@,${docdir},g;
+			s,@DOC_LEN@,${doc_len},g;
+			s,@EXT@,${ext},g;
+			s,@EXT_LEN@,${#ext},g;
+			s,@SUMMARY_LEN@,${summary_len},g;
+			s,@TIME@,${time},g;
+			s,@VERSION@,${PV},g;
+			s,@VERSION_LEN@,${#PV},g;
+			s,@TIMESTAMP@,${timestamp}," \
+			${S}/template-builtin.reg > ${D}${regdir}/${ext}.reg
+	done
+
+	# Un/load mod_php5 from httpd.conf on postinstall/preremove
+	dodir /etc/postinstall /etc/preremove ${APACHE2_SYSCONFDIR}
+	echo "${APXS2} -e -a -n php5 ${APACHE2_LIBEXECDIR}/cygphp5.so" > ${D}/etc/postinstall/apache2-mod_php5.sh
+	echo "${APXS2} -e -A -n php5 ${APACHE2_LIBEXECDIR}/cygphp5.so" > ${D}/etc/preremove/apache2-mod_php5.sh
+
+	cat > ${D}${APACHE2_SYSCONFDIR}/mod_php5.conf <<_EOF
+<IfModule php5_module>
+    AddType application/x-httpd-php .php .phtml
+    AddType application/x-httpd-php-source .phps
+</IfModule>
+_EOF
+
+}
