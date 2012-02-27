@@ -16,7 +16,7 @@ PATCH_URI="
 	5.3.6-gcc-visibility.patch
 "
 
-DIFF_EXCLUDES="aclocal.m4 configure libtool.m4 lt*.m4 ltmain.sh php_config.h.in tests"
+DIFF_EXCLUDES="aclocal.m4 configure generated_lists libtool.m4 lt*.m4 ltmain.sh php_config.h.in tests"
 
 # EXTENSIONS:
 #
