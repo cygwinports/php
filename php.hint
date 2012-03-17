@@ -1,5 +1,5 @@
 category: Interpreters PHP
-requires: crypt libgcc1 libopenssl098 libpcre0 libxml2 zlib0
+requires: crypt libgcc1 libopenssl100 libpcre0 libxml2 zlib0
 sdesc: "PHP Hypertext Preprocessor (CLI, CGI, and FastCGI interpreters)"
 ldesc: "PHP (recursive acronym for 'PHP: Hypertext Preprocessor') is a
 widely-used Open Source general-purpose scripting language that is
