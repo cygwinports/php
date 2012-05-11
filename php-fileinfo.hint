@@ -1,5 +1,5 @@
 category: PHP
-requires: php libgcc1 libpcre0
+requires: php libgcc1 libpcre1
 external-source: php
 sdesc: "PHP fileinfo extension"
 ldesc: "PHP (recursive acronym for 'PHP: Hypertext Preprocessor') is a
