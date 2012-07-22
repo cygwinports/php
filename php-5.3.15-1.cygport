@@ -1,6 +1,10 @@
 inherit apache2
 
-DESCRIPTION="PHP Hyptertext Preprocessor"
+CATEGORY="Interpreters PHP"
+SUMMARY="PHP Hypertext Preprocessor"
+DESCRIPTION="PHP (recursive acronym for 'PHP: Hypertext Preprocessor')
+is a widely-used Open Source general-purpose scripting language that is
+especially suited for Web development and can be embedded into HTML."
 HOMEPAGE="http://www.php.net/"
 SRC_URI="http://www.php.net/distributions/${P}.tar.bz2"
 SRC_URI+=" template-builtin.reg template-ext.reg"
@@ -179,6 +183,7 @@ php_CONTENTS="etc/defaults/ ${inidir#/}/conf.d/.keep* etc/p*/php.*
               usr/share/pear/doc/hash/CREDITS
               usr/share/pear/doc/pdo/CREDITS"
 apache2_mod_php5_CONTENTS="${APACHE2_SYSCONFDIR#/} etc/p*/apache2-*.sh ${APACHE2_LIBEXECDIR#/}"
+apache2_mod_php5_SUMMARY="Embedded PHP for Apache 2.x"
 
 # This method provides 50+ modules, so better automate this:
 for ext in $(echo ${cli_args} | sed -e 's# #\n#g' | grep shared \
@@ -189,6 +194,7 @@ do
 				     usr/lib/php/*/${ext}.dll
 				     usr/share/pear/doc/${ext}/
 				     usr/share/pear/.registry/.channel.*/${ext}.reg"
+	declare php_${ext}_SUMMARY="PHP ${ext} extension"
 done
 php_phar_CONTENTS+=" usr/bin/phar*"
 unset ext

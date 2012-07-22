@@ -1,7 +1,0 @@
-category: PHP
-requires: php libsybdb5
-external-source: php
-sdesc: "PHP Data Objects Sybase driver"
-ldesc: "PHP (recursive acronym for 'PHP: Hypertext Preprocessor') is a
-widely-used Open Source general-purpose scripting language that is
-especially suited for Web development and can be embedded into HTML."
