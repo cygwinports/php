@@ -1,6 +1,9 @@
 inherit apache2
 
-CATEGORY="Interpreters PHP"
+NAME="php"
+VERSION=5.3.20
+RELEASE=1
+CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
 DESCRIPTION="PHP (recursive acronym for 'PHP: Hypertext Preprocessor')
 is a widely-used Open Source general-purpose scripting language that is
@@ -173,6 +176,7 @@ cli_args="
 # packaging
 #
 PKG_NAMES="${PN} apache2-mod_php${PV_MAJ}"
+php_CATEGORY="Interpreters PHP"
 php_CONTENTS="etc/defaults/ ${inidir#/}/conf.d/.keep* etc/p*/php.*
               usr/bin/cygphp5.dll usr/bin/php* usr/include/ usr/lib/lib*
               usr/lib/php/build/ usr/share/doc/ usr/share/man/
