@@ -1,7 +1,7 @@
 inherit apache2
 
 NAME="php"
-VERSION=5.3.20
+VERSION=5.4.10
 RELEASE=1
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
@@ -13,13 +13,12 @@ SRC_URI="http://www.php.net/distributions/${P}.tar.bz2"
 SRC_URI+=" template-builtin.reg template-ext.reg"
 PATCH_URI="
 	5.3.4-cygwin-build.patch
-	5.3.8-autoconf264.patch
 	5.3.4-libtool24.patch
 	5.3.8-curl-ssl.patch
 	5.3.4-dba-gdbm_compat.patch
 	5.3.4-intl-libstdc.patch
 	5.3.4-pspell-libpspell.patch
-	5.3.8-readline-funcs.patch
+	5.4.10-readline-funcs.patch
 	5.3.10-sybase-cygwin.patch
 	5.3.6-gcc-visibility.patch
 "
@@ -40,6 +39,8 @@ DIFF_EXCLUDES="aclocal.m4 configure generated_lists libtool.m4 lt*.m4 ltmain.sh 
 # pcre: fileinfo
 # pdo: pdo_*
 # xml: xmlrpc
+#
+# gd: not compatible with system libgd, https://bugs.php.net/bug.php?id=60108
 
 # location of php.ini files
 inidir=/etc/php${PV_MAJ}
@@ -89,13 +90,15 @@ cli_args="
   --enable-exif=shared
   --enable-fileinfo=shared
   --enable-ftp=shared
-  --with-gd=shared,/usr
+  --with-gd=shared
+  --with-vpx-dir=/usr
   --with-jpeg-dir=/usr
   --with-png-dir=/usr
   --with-zlib-dir=/usr
   --with-xpm-dir=/usr
   --with-freetype-dir=/usr
   --with-t1lib=/usr
+  --enable-gd-native-ttf
   --with-gettext=shared
   --with-gmp=shared,/usr
   --with-iconv=shared,/usr
@@ -152,9 +155,7 @@ cli_args="
   --enable-shmop=shared
   --enable-simplexml=shared
   --with-snmp=no
-  --enable-ucd-snmp-hack=no
   --enable-soap=shared
-  --with-sqlite=no
   --with-sqlite3=shared,/usr
   --with-sybase-ct=shared,/usr
   --enable-sockets=shared
@@ -177,9 +178,9 @@ cli_args="
 #
 PKG_NAMES="${PN} apache2-mod_php${PV_MAJ}"
 php_CATEGORY="Interpreters PHP"
-php_CONTENTS="etc/defaults/ ${inidir#/}/conf.d/.keep* etc/p*/php.*
+php_CONTENTS="etc/defaults/ ${inidir#/}/conf.d/.keep* etc/p*/php*
               usr/bin/cygphp5.dll usr/bin/php* usr/include/ usr/lib/lib*
-              usr/lib/php/build/ usr/share/doc/ usr/share/man/
+              usr/lib/php/build/ usr/sbin/ usr/share/doc/ usr/share/fpm/ usr/share/man/
               usr/share/pear/.registry/.channel.*/filter.reg
               usr/share/pear/.registry/.channel.*/hash.reg
               usr/share/pear/.registry/.channel.*/pdo.reg
@@ -217,11 +218,12 @@ src_compile() {
 
 
 	#
-	# build runtime and CLI
+	# build runtime and executable SAPIs (CLI, CGI, FPM)
 	#
 	mkdir -p ${B}/embed
 	cd ${B}/embed
-	CYGCONF_SOURCE="${S}" cygconf ${common_args} ${cli_args} --enable-embed
+	CYGCONF_SOURCE="${S}" cygconf ${common_args} ${cli_args} \
+		--enable-cgi --enable-cli --enable-fpm --enable-embed
 
 	sed -e '/^LTCFLAGS=/d' -i libtool
 	sed -e 's/ -lphp5 / libphp5.la /g' -i Makefile
@@ -232,34 +234,6 @@ src_compile() {
 
 	# then make everything else
 	cygmake \
-		PHP_GLOBAL_OBJS='' \
-		ZEND_EXTRA_LIBS="${B}/embed/libphp${PV_MAJ}.la"
-
-
-	#
-	# CGI SAPI
-	#
-	mkdir -p ${B}/cgi
-	cd ${B}/cgi
-	CYGCONF_SOURCE="${S}" cygconf --disable-all --disable-cli --enable-cgi ${common_args}
-
-	sed -e '/^LTCFLAGS=/d' -i libtool
-
-	cygmake sapi/cgi/php-cgi.exe \
-		PHP_GLOBAL_OBJS='' \
-		ZEND_EXTRA_LIBS="${B}/embed/libphp${PV_MAJ}.la"
-
-
-	#
-	# FastCGI Process Manager SAPI
-	#
-	mkdir -p ${B}/fpm
-	cd ${B}/fpm
-	CYGCONF_SOURCE="${S}" cygconf --disable-all --disable-cli --enable-fpm ${common_args}
-
-	sed -e '/^LTCFLAGS=/d' -i libtool
-
-	cygmake sapi/fpm/php-fpm.exe \
 		PHP_GLOBAL_OBJS='' \
 		ZEND_EXTRA_LIBS="${B}/embed/libphp${PV_MAJ}.la"
 
@@ -295,14 +269,11 @@ src_test() {
 src_install() {
 	local n sapi x xdir
 
-	# install the SAPIs
-	for sapi in cgi fpm apache2
-	do
-		cd ${B}/${sapi}
-		cygmake -j1 install-sapi INSTALL_ROOT=${D} PHP_GLOBAL_OBJS=''
-	done
+	# install the Apache SAPI
+	cd ${B}/apache2
+	cygmake -j1 install-sapi INSTALL_ROOT=${D} PHP_GLOBAL_OBJS=''
 
-	# install CLI, build environment, and everything else
+	# install the other SAPIs, build environment, and everything else
 	cd ${B}/embed
 	cygmake -j1 install INSTALL_ROOT=${D} INSTALL_IT=
 	# install the shared lib (normally done by INSTALL_IT)
@@ -311,7 +282,8 @@ src_install() {
 
 	# install the real executables, not the libtool stubs
 	cd ${B}
-	dobin */sapi/*/*.exe
+	dobin embed/sapi/c*/*.exe
+	dosbin embed/sapi/fpm/php-fpm.exe
 
 	# sanitize php-config
 	sed -e "s#^libs=.*#libs=\"-lphp${PV_MAJ}\"#" \

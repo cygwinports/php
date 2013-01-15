@@ -5,6 +5,7 @@
    PHP_SUBST(INTL_SHARED_LIBADD)
    PHP_REQUIRE_CXX()
 +  PHP_ADD_LIBRARY(stdc++, 1, INTL_SHARED_LIBADD)
- 
-   PHP_NEW_EXTENSION(intl, php_intl.c \
-     intl_error.c \
+   if test "$icu_version" -ge "4002"; then
+     icu_spoof_src=" spoofchecker/spoofchecker_class.c \
+     spoofchecker/spoofchecker.c\
+

@@ -1,0 +1,30 @@
+--- origsrc/php-5.4.10/ext/readline/config.m4	2012-12-19 00:55:19.000000000 -0600
++++ src/php-5.4.10/ext/readline/config.m4	2013-01-14 20:32:51.204411800 -0600
+@@ -60,7 +60,7 @@ if test "$PHP_READLINE" && test "$PHP_RE
+     -L$READLINE_DIR/$PHP_LIBDIR $PHP_READLINE_LIBS
+   ])
+ 
+-  PHP_CHECK_LIBRARY(edit, rl_on_new_line,
++  PHP_CHECK_LIBRARY(readline, rl_on_new_line,
+   [
+     AC_DEFINE(HAVE_RL_ON_NEW_LINE, 1, [ ])
+   ],[],[
+--- origsrc/php-5.4.10/ext/readline/readline.c	2012-12-19 00:55:19.000000000 -0600
++++ src/php-5.4.10/ext/readline/readline.c	2013-01-14 20:33:59.500084200 -0600
+@@ -51,13 +51,15 @@ PHP_FUNCTION(readline_list_history);
+ PHP_FUNCTION(readline_read_history);
+ PHP_FUNCTION(readline_write_history);
+ PHP_FUNCTION(readline_completion_function);
++#if HAVE_RL_ON_NEW_LINE
++PHP_FUNCTION(readline_on_new_line);
++#endif
+ 
+ #if HAVE_RL_CALLBACK_READ_CHAR
+ PHP_FUNCTION(readline_callback_handler_install);
+ PHP_FUNCTION(readline_callback_read_char);
+ PHP_FUNCTION(readline_callback_handler_remove);
+ PHP_FUNCTION(readline_redisplay);
+-PHP_FUNCTION(readline_on_new_line);
+ 
+ static zval *_prepped_callback = NULL;
+ 

@@ -121,23 +121,11 @@
      PHP_SELECT_SAPI(apache2handler, bundle, mod_php5.c sapi_apache2.c apache_config.c php_functions.c, $APACHE_CFLAGS)
 --- origsrc/php-5.3.4/sapi/cli/config.m4	2008-09-01 08:15:31.000000000 -0500
 +++ src/php-5.3.4/sapi/cli/config.m4	2011-01-02 08:15:50.638543400 -0600
-@@ -9,7 +9,7 @@ PHP_ARG_ENABLE(cli,,
- AC_MSG_CHECKING(for CLI build)
- if test "$PHP_CLI" != "no"; then
-   PHP_ADD_MAKEFILE_FRAGMENT($abs_srcdir/sapi/cli/Makefile.frag,$abs_srcdir/sapi/cli,sapi/cli)
+@@ -9,1 +9,1 @@ PHP_ARG_ENABLE(cli,,
 -  SAPI_CLI_PATH=sapi/cli/php
 +  SAPI_CLI_PATH=sapi/cli/php$EXEEXT
-   PHP_SUBST(SAPI_CLI_PATH)
- 
-   case $host_alias in
 --- origsrc/php-5.3.4/sapi/fpm/config.m4	2010-11-26 07:46:15.000000000 -0600
 +++ src/php-5.3.4/sapi/fpm/config.m4	2011-01-02 22:17:51.101730200 -0600
-@@ -385,7 +385,7 @@ if test "$PHP_FPM" != "no"; then
-   PHP_OUTPUT(sapi/fpm/php-fpm.conf sapi/fpm/init.d.php-fpm sapi/fpm/php-fpm.8)
-   PHP_ADD_MAKEFILE_FRAGMENT([$abs_srcdir/sapi/fpm/Makefile.frag], [$abs_srcdir/sapi/fpm], [sapi/fpm])
- 
+@@ -385,1 +385,1 @@ if test "$PHP_FPM" != "no"; then
 -  SAPI_FPM_PATH=sapi/fpm/php-fpm
 +  SAPI_FPM_PATH=sapi/fpm/php-fpm$EXEEXT
-   PHP_SUBST(SAPI_FPM_PATH)
-   
-   if test "$fpm_trace_type" && test -f "$abs_srcdir/sapi/fpm/fpm/fpm_trace_$fpm_trace_type.c"; then
