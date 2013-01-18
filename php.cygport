@@ -16,6 +16,7 @@ PATCH_URI="
 	5.3.4-libtool24.patch
 	5.3.8-curl-ssl.patch
 	5.3.4-dba-gdbm_compat.patch
+	5.4.10-imap-cygwin.patch
 	5.3.4-intl-libstdc.patch
 	5.3.4-pspell-libpspell.patch
 	5.4.10-readline-funcs.patch
@@ -102,9 +103,9 @@ cli_args="
   --with-gettext=shared
   --with-gmp=shared,/usr
   --with-iconv=shared,/usr
-  --with-imap=no
+  --with-imap=shared,/usr
   --with-kerberos=no
-  --with-imap-ssl=no
+  --with-imap-ssl=yes
   --with-interbase=no
   --with-ldap=shared,/usr
   --with-ldap-sasl=/usr
@@ -233,7 +234,9 @@ src_compile() {
 	sed -e 's#link=yes#link=no#' -i libphp${PV_MAJ}.la
 
 	# then make everything else
+	# c-client is static only so we need to circumvent libtool to link
 	cygmake \
+		IMAP_SHARED_LIBADD='-Wl,/usr/lib/c-client.a,-lssl,-lcrypto' \
 		PHP_GLOBAL_OBJS='' \
 		ZEND_EXTRA_LIBS="${B}/embed/libphp${PV_MAJ}.la"
 
