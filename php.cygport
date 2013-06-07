@@ -1,7 +1,7 @@
 inherit apache2
 
 NAME="php"
-VERSION=5.4.15
+VERSION=5.4.16
 RELEASE=1
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
@@ -50,6 +50,8 @@ inidir=/etc/php${PV_MAJ}
 common_args="
   --cache-file=../config.cache
   --sysconfdir=${inidir}
+  --libdir=/usr/lib/php
+  --datadir=/usr/share/php
 
   --disable-static
   --disable-rpath
@@ -142,9 +144,9 @@ cli_args="
   --with-pdo-mysql=shared,mysqlnd
   --with-pdo-oci=no
   --with-pdo-odbc=shared,iodbc,/usr
-  --with-pdo-pgsql=shared,/usr
+  ${NOTNOW+--with-pdo-pgsql=shared,/usr}
   --with-pdo-sqlite=shared,/usr
-  --with-pgsql=shared,/usr
+  ${NOTNOW+--with-pgsql=shared,/usr}
   --enable-phar=shared
   --enable-posix=shared
   --with-pspell=shared,/usr
@@ -181,13 +183,14 @@ PKG_NAMES="${PN} apache2-mod_php${PV_MAJ}"
 php_CATEGORY="Interpreters PHP"
 php_CONTENTS="etc/defaults/ ${inidir#/}/conf.d/.keep* etc/p*/php*
               usr/bin/cygphp5.dll usr/bin/php* usr/include/ usr/lib/lib*
-              usr/lib/php/build/ usr/sbin/ usr/share/doc/ usr/share/fpm/ usr/share/man/
+              usr/lib/php/build/ usr/sbin/ usr/share/doc/ usr/share/man/
               usr/share/pear/.registry/.channel.*/filter.reg
               usr/share/pear/.registry/.channel.*/hash.reg
               usr/share/pear/.registry/.channel.*/pdo.reg
               usr/share/pear/doc/filter/CREDITS
               usr/share/pear/doc/hash/CREDITS
-              usr/share/pear/doc/pdo/CREDITS"
+              usr/share/pear/doc/pdo/CREDITS
+              usr/share/php/"
 apache2_mod_php5_CONTENTS="${APACHE2_SYSCONFDIR#/} etc/p*/apache2-*.sh ${APACHE2_LIBEXECDIR#/}"
 apache2_mod_php5_SUMMARY="Embedded PHP for Apache 2.x"
 
