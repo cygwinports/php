@@ -2,16 +2,25 @@ inherit apache2
 
 NAME="php"
 VERSION=5.4.16
-RELEASE=1
+RELEASE=2
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
 DESCRIPTION="PHP (recursive acronym for 'PHP: Hypertext Preprocessor')
 is a widely-used Open Source general-purpose scripting language that is
 especially suited for Web development and can be embedded into HTML."
 HOMEPAGE="http://www.php.net/"
-SRC_URI="http://www.php.net/distributions/${P}.tar.bz2"
+SRC_URI="http://www.php.net/distributions/php-${VERSION}.tar.bz2"
 SRC_URI+=" template-builtin.reg template-ext.reg"
+# for 5.5:
+#	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.2.4-embed.patch
 PATCH_URI="
+	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.3.0-recode.patch
+	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.4.7-odbctimer.patch
+	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.4.16-pdopgsql.patch?h=f18
+	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.4.16-gc.patch?h=f18
+	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.4.16-fpm.patch?h=f18
+	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.4.0-easter.patch?h=f18
+	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.3.1-systzdata-v10.patch
 	5.3.4-cygwin-build.patch
 	5.3.4-libtool24.patch
 	5.3.8-curl-ssl.patch
@@ -44,7 +53,7 @@ DIFF_EXCLUDES="aclocal.m4 configure generated_lists libtool.m4 lt*.m4 ltmain.sh 
 # gd: not compatible with system libgd, https://bugs.php.net/bug.php?id=60108
 
 # location of php.ini files
-inidir=/etc/php${PV_MAJ}
+inidir=/etc/php${VERSION%%.*}
 
 # required for all configure runs
 common_args="
@@ -144,9 +153,9 @@ cli_args="
   --with-pdo-mysql=shared,mysqlnd
   --with-pdo-oci=no
   --with-pdo-odbc=shared,iodbc,/usr
-  ${NOTNOW+--with-pdo-pgsql=shared,/usr}
+  --with-pdo-pgsql=shared,/usr
   --with-pdo-sqlite=shared,/usr
-  ${NOTNOW+--with-pgsql=shared,/usr}
+  --with-pgsql=shared,/usr
   --enable-phar=shared
   --enable-posix=shared
   --with-pspell=shared,/usr
@@ -179,7 +188,7 @@ cli_args="
 
 # packaging
 #
-PKG_NAMES="${PN} apache2-mod_php${PV_MAJ}"
+PKG_NAMES="${NAME} apache2-mod_php${VERSION%%.*}"
 php_CATEGORY="Interpreters PHP"
 php_CONTENTS="etc/defaults/ ${inidir#/}/conf.d/.keep* etc/p*/php*
               usr/bin/cygphp5.dll usr/bin/php* usr/include/ usr/lib/lib*
@@ -233,15 +242,15 @@ src_compile() {
 	sed -e 's/ -lphp5 / libphp5.la /g' -i Makefile
 
 	# first make the common sources library
-	cygmake libphp${PV_MAJ}.la
-	sed -e 's#link=yes#link=no#' -i libphp${PV_MAJ}.la
+	cygmake libphp${VERSION%%.*}.la
+	sed -e 's#link=yes#link=no#' -i libphp${VERSION%%.*}.la
 
 	# then make everything else
 	# c-client is static only so we need to circumvent libtool to link
 	cygmake \
 		IMAP_SHARED_LIBADD='-Wl,/usr/lib/c-client.a,-lssl,-lcrypto' \
 		PHP_GLOBAL_OBJS='' \
-		ZEND_EXTRA_LIBS="${B}/embed/libphp${PV_MAJ}.la"
+		ZEND_EXTRA_LIBS="${B}/embed/libphp${VERSION%%.*}.la"
 
 
 	#
@@ -260,9 +269,9 @@ src_compile() {
 		-i Makefile
 
 	# Apache2 expects mods to have .so suffix on all platforms
-	cygmake libphp${PV_MAJ}.la \
+	cygmake libphp${VERSION%%.*}.la \
 		PHP_GLOBAL_OBJS='' \
-		ZEND_EXTRA_LIBS="${B}/embed/libphp${PV_MAJ}.la"
+		ZEND_EXTRA_LIBS="${B}/embed/libphp${VERSION%%.*}.la"
 }
 
 src_test() {
@@ -283,8 +292,8 @@ src_install() {
 	cd ${B}/embed
 	cygmake -j1 install INSTALL_ROOT=${D} INSTALL_IT=
 	# install the shared lib (normally done by INSTALL_IT)
-	dobin libs/cygphp${PV_MAJ}.dll
-	dolib libs/libphp${PV_MAJ}.dll.a
+	dobin libs/cygphp${VERSION%%.*}.dll
+	dolib libs/libphp${VERSION%%.*}.dll.a
 
 	# install the real executables, not the libtool stubs
 	cd ${B}
@@ -292,7 +301,7 @@ src_install() {
 	dosbin embed/sapi/fpm/php-fpm.exe
 
 	# sanitize php-config
-	sed -e "s#^libs=.*#libs=\"-lphp${PV_MAJ}\"#" \
+	sed -e "s#^libs=.*#libs=\"-lphp${VERSION%%.*}\"#" \
 		-e 's#^php_sapis=.*#php_sapis="cli cgi embed fpm apache2handler"#' \
 		-i ${D}/usr/bin/php-config
 
@@ -340,8 +349,8 @@ src_install() {
 			s,@PATH_LEN@,${path_len},g;
 			s,@SUMMARY_LEN@,${summary_len},g;
 			s,@TIME@,${time},g;
-			s,@VERSION@,${PV},g;
-			s,@VERSION_LEN@,${#PV},g;
+			s,@VERSION@,${VERSION},g;
+			s,@VERSION_LEN@,${#VERSION},g;
 			s,@TIMESTAMP@,${timestamp}," \
 			${S}/template-ext.reg > ${D}${regdir}/${ext}.reg
 	done
@@ -365,8 +374,8 @@ src_install() {
 			s,@EXT_LEN@,${#ext},g;
 			s,@SUMMARY_LEN@,${summary_len},g;
 			s,@TIME@,${time},g;
-			s,@VERSION@,${PV},g;
-			s,@VERSION_LEN@,${#PV},g;
+			s,@VERSION@,${VERSION},g;
+			s,@VERSION_LEN@,${#VERSION},g;
 			s,@TIMESTAMP@,${timestamp}," \
 			${S}/template-builtin.reg > ${D}${regdir}/${ext}.reg
 	done
