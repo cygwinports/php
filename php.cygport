@@ -228,7 +228,8 @@ src_compile() {
 	cat build/lt*.m4 >> build/libtool.m4
 
 	cygmake -j1 -B -f build/build.mk ZENDDIR="Zend"
-
+	# these are shipped and used by phpize
+	gnuconfigize .
 
 	#
 	# build runtime and executable SAPIs (CLI, CGI, FPM)
