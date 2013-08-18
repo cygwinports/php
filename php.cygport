@@ -1,7 +1,7 @@
 inherit apache2
 
 NAME="php"
-VERSION=5.4.17
+VERSION=5.4.18
 RELEASE=1
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
@@ -16,9 +16,6 @@ SRC_URI+=" template-builtin.reg template-ext.reg"
 PATCH_URI="
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.3.0-recode.patch
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.4.7-odbctimer.patch
-	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.4.16-pdopgsql.patch?h=f18
-	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.4.16-gc.patch?h=f18
-	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.4.16-fpm.patch?h=f18
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.4.0-easter.patch?h=f18
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.3.1-systzdata-v10.patch
 	5.3.4-cygwin-build.patch
@@ -153,9 +150,9 @@ cli_args="
   --with-pdo-mysql=shared,mysqlnd
   --with-pdo-oci=no
   --with-pdo-odbc=shared,iodbc,/usr
-  ${ARCH_i686+--with-pdo-pgsql=shared,/usr}
+  --with-pdo-pgsql=shared,/usr
   --with-pdo-sqlite=shared,/usr
-  ${ARCH_i686+--with-pgsql=shared,/usr}
+  --with-pgsql=shared,/usr
   --enable-phar=shared
   --enable-posix=shared
   --with-pspell=shared,/usr
