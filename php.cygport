@@ -1,7 +1,7 @@
 inherit apache2
 
 NAME="php"
-VERSION=5.4.19
+VERSION=5.4.20
 RELEASE=1
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
@@ -29,6 +29,9 @@ PATCH_URI="
 	5.3.10-sybase-cygwin.patch
 	5.3.6-gcc-visibility.patch
 	5.4.19-posix-ttyname_r.patch
+	5.4.20-configure-implicit-decls.patch
+	5.4.20-gd-implicit-decls.patch
+	5.4.20-libmbfl-implicit-decls.patch
 "
 
 DIFF_EXCLUDES="aclocal.m4 configure generated_lists libtool.m4 lt*.m4 ltmain.sh php_config.h.in php_version.h tests"
@@ -161,7 +164,7 @@ cli_args="
   --with-pspell=shared,/usr
   --with-libedit=no
   --with-readline=shared,/usr
-  --with-recode=no
+  --with-recode=shared,/usr
   --with-mm=no
   --enable-session=shared
   --enable-shmop=shared

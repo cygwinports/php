@@ -1,0 +1,10 @@
+--- origsrc/php-5.4.20/ext/mbstring/libmbfl/filters/mbfilter_utf8_mobile.c	2013-09-18 00:48:57.000000000 -0500
++++ src/php-5.4.20/ext/mbstring/libmbfl/filters/mbfilter_utf8_mobile.c	2013-10-17 15:42:29.027523200 -0500
+@@ -38,6 +38,7 @@
+ 
+ extern int mbfl_filt_ident_utf8(int c, mbfl_identify_filter *filter);
+ extern int mbfl_filt_conv_utf8_wchar_flush(mbfl_convert_filter *filter);
++extern int mbfl_filt_put_invalid_char(int c, mbfl_convert_filter *filter);
+ 
+ extern const unsigned char mblen_table_utf8[];
+ 
