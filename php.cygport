@@ -1,7 +1,7 @@
 inherit apache2
 
 NAME="php"
-VERSION=5.4.25
+VERSION=5.4.26
 RELEASE=1
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
