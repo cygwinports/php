@@ -1,7 +1,7 @@
 inherit apache2
 
 NAME="php"
-VERSION=5.4.27
+VERSION=5.5.11
 RELEASE=1
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
@@ -11,13 +11,12 @@ especially suited for Web development and can be embedded into HTML."
 HOMEPAGE="http://www.php.net/"
 SRC_URI="http://www.php.net/distributions/php-${VERSION}.tar.bz2"
 SRC_URI+=" template-builtin.reg template-ext.reg"
-# for 5.5:
-#	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.2.4-embed.patch
 PATCH_URI="
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.3.0-recode.patch
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.4.7-odbctimer.patch
-	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.4.0-easter.patch?h=f18
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.3.1-systzdata-v10.patch
+	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.4.8-ldap_r.patch
+	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.4.9-phpinfo.patch
 	5.3.4-cygwin-build.patch
 	5.3.4-libtool24.patch
 	5.3.8-curl-ssl.patch
@@ -30,7 +29,6 @@ PATCH_URI="
 	5.3.6-gcc-visibility.patch
 	5.4.19-posix-ttyname_r.patch
 	5.4.20-configure-implicit-decls.patch
-	5.4.20-gd-implicit-decls.patch
 	5.4.20-libmbfl-implicit-decls.patch
 "
 
@@ -150,6 +148,7 @@ cli_args="
   --with-esoob=no
   --with-unixODBC=no
   --with-dbmaker=no
+  --enable-opcache=shared
   --enable-pcntl=no
   --with-pdo-dblib=shared,/usr
   --with-pdo-firebird=no
@@ -194,7 +193,7 @@ cli_args="
 PKG_NAMES="${NAME} apache2-mod_php${VERSION%%.*}"
 php_CATEGORY="Interpreters PHP"
 php_CONTENTS="etc/defaults/ ${inidir#/}/conf.d/.keep* etc/p*/php*
-              usr/bin/cygphp5.dll usr/bin/php* usr/include/ usr/lib/lib*
+              usr/bin/cygphp5-*.dll usr/bin/php* usr/include/ usr/lib/lib*
               usr/lib/php/build/ usr/sbin/ usr/share/doc/ usr/share/man/
               usr/share/pear/.registry/.channel.*/filter.reg
               usr/share/pear/.registry/.channel.*/hash.reg
@@ -246,7 +245,9 @@ src_compile() {
 	sed -e 's/ -lphp5 / libphp5.la /g' -i Makefile
 
 	# first make the common sources library
-	cygmake libphp${VERSION%%.*}.la
+	cygmake libphp${VERSION%%.*}.la \
+		EXTRA_LDFLAGS="-release ${VERSION%.*} -avoid-version -module -no-undefined"
+
 	sed -e 's#link=yes#link=no#' -i libphp${VERSION%%.*}.la
 
 	# then make everything else
@@ -296,8 +297,8 @@ src_install() {
 	cd ${B}/embed
 	cygmake -j1 install INSTALL_ROOT=${D} INSTALL_IT=
 	# install the shared lib (normally done by INSTALL_IT)
-	dobin libs/cygphp${VERSION%%.*}.dll
-	dolib libs/libphp${VERSION%%.*}.dll.a
+	dobin libs/cygphp5-*.dll
+	dolib libs/libphp5.dll.a
 
 	# install the real executables, not the libtool stubs
 	cd ${B}
@@ -335,11 +336,17 @@ src_install() {
 		summary_len=$((${#ext} + 14))	# PHP ___ extension
 
 		# create .ini file for automatic extension loading
-		echo "extension = ${dll}" >> ${D}${inidir}/conf.d/${ext}.ini
+		if $(${OBJDUMP} -p ${x} | grep -q zend_startup_module)
+		then
+			echo "zend_extension = ${xdir}/${dll}" >> ${D}${inidir}/conf.d/${ext}.ini
+		else
+			echo "extension = ${dll}" >> ${D}${inidir}/conf.d/${ext}.ini
+		fi
 
 		# register extension with pecl to prevent accidental
 		# installation of obsolete versions
 		insinto ${docdir}
+		touch ${S}/ext/${ext}/CREDITS
 		doins ${S}/ext/${ext}/CREDITS
 
 		sed -e "s,@DATE@,${date},g;
