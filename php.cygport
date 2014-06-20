@@ -203,6 +203,7 @@ php_CONTENTS="--exclude=php-config* --exclude=phpize*
               usr/share/pear/.registry/.channel.*/filter.reg
               usr/share/pear/.registry/.channel.*/hash.reg
               usr/share/pear/.registry/.channel.*/pdo.reg
+              usr/share/pear/.registry/.channel.*/session.reg
               usr/share/pear/doc/filter/CREDITS
               usr/share/pear/doc/hash/CREDITS
               usr/share/pear/doc/pdo/CREDITS
@@ -381,6 +382,7 @@ src_install() {
 	done
 
 	# builtin extensions
+	# when adding, be sure to update php_CONTENTS
 	for ext in filter hash pdo session
 	do
 		docdir=/usr/share/pear/doc/${ext}
