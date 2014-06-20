@@ -2,7 +2,7 @@ inherit apache2
 
 NAME="php"
 VERSION=5.5.13
-RELEASE=1
+RELEASE=2
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
 DESCRIPTION="PHP (recursive acronym for 'PHP: Hypertext Preprocessor')
@@ -49,6 +49,7 @@ DIFF_EXCLUDES="aclocal.m4 configure generated_lists libtool.m4 lt*.m4 ltmain.sh 
 # openssl: phar
 # pcre: fileinfo
 # pdo: pdo_*
+# session: memcache (PECL)
 # xml: xmlrpc
 #
 # gd: not compatible with system libgd, https://bugs.php.net/bug.php?id=60108
@@ -76,6 +77,7 @@ common_args="
   --enable-libxml=yes
   --with-openssl=yes
   --enable-pdo=yes
+  --enable-session=yes
   --enable-xml=yes
   --with-libxml-dir=/usr
   --with-openssl-dir=/usr
@@ -166,7 +168,6 @@ cli_args="
   --with-readline=shared,/usr
   --with-recode=shared,/usr
   --with-mm=no
-  --enable-session=shared
   --enable-shmop=shared
   --enable-simplexml=shared
   --with-snmp=no
@@ -191,11 +192,14 @@ cli_args="
 
 # packaging
 #
-PKG_NAMES="${NAME} apache2-mod_php${VERSION%%.*}"
+PKG_NAMES="${NAME} ${NAME}-devel apache2-mod_php${VERSION%%.*}"
 php_CATEGORY="Interpreters PHP"
-php_CONTENTS="etc/defaults/ ${inidir#/}/conf.d/.keep* etc/p*/php*
-              usr/bin/cygphp5-*.dll usr/bin/php* usr/include/ usr/lib/lib*
-              usr/lib/php/build/ usr/sbin/ usr/share/doc/ usr/share/man/
+# previously shared extensions moved into core
+php_OBSOLETES="php-session"
+php_CONTENTS="--exclude=php-config* --exclude=phpize*
+              etc/defaults/ ${inidir#/}/conf.d/.keep* etc/p*/php*
+              usr/bin/cygphp5-*.dll usr/bin/php*
+              usr/sbin/ usr/share/doc/ usr/share/man/
               usr/share/pear/.registry/.channel.*/filter.reg
               usr/share/pear/.registry/.channel.*/hash.reg
               usr/share/pear/.registry/.channel.*/pdo.reg
@@ -203,6 +207,11 @@ php_CONTENTS="etc/defaults/ ${inidir#/}/conf.d/.keep* etc/p*/php*
               usr/share/pear/doc/hash/CREDITS
               usr/share/pear/doc/pdo/CREDITS
               usr/share/php/"
+php_devel_CATEGORY=${php_CATEGORY}
+php_devel_REQUIRES="autoconf gcc-core make"
+php_devel_CONTENTS="usr/bin/php-config usr/bin/phpize usr/include/
+	usr/lib/lib* usr/lib/php/build/
+	usr/share/man/man1/php-config.* usr/share/man/man1/phpize.*"
 apache2_mod_php5_CONTENTS="${APACHE2_SYSCONFDIR#/} etc/p*/apache2-*.sh ${APACHE2_LIBEXECDIR#/}"
 apache2_mod_php5_SUMMARY="Embedded PHP for Apache 2.x"
 
@@ -372,7 +381,7 @@ src_install() {
 	done
 
 	# builtin extensions
-	for ext in filter hash pdo
+	for ext in filter hash pdo session
 	do
 		docdir=/usr/share/pear/doc/${ext}
 		doc_len=$((${#docdir} + 8))	# /CREDITS
