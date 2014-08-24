@@ -1,7 +1,7 @@
 inherit apache2
 
 NAME="php"
-VERSION=5.5.14
+VERSION=5.5.16
 RELEASE=1
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
@@ -10,7 +10,7 @@ is a widely-used Open Source general-purpose scripting language that is
 especially suited for Web development and can be embedded into HTML."
 HOMEPAGE="http://www.php.net/"
 #SRC_URI="http://www.php.net/distributions/php-${VERSION}.tar.bz2"
-md5sum=894476ae960b15f58b4c7482aafe84ad
+md5sum=0ccff2dc56cb8889e169bd00b78e7e5a
 SRC_URI="http://pkgs.fedoraproject.org/repo/pkgs/php/php-${VERSION}-strip.tar.xz/${md5sum}/php-${VERSION}-strip.tar.xz"
 SRC_URI+=" template-builtin.reg template-ext.reg"
 PATCH_URI="
@@ -19,6 +19,7 @@ PATCH_URI="
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.3.1-systzdata-v10.patch
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.4.8-ldap_r.patch
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.4.9-phpinfo.patch
+	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-bug67865.patch?h=f20
 	5.3.4-cygwin-build.patch
 	5.3.4-libtool24.patch
 	5.3.8-curl-ssl.patch
@@ -197,7 +198,8 @@ php_CATEGORY="Interpreters PHP"
 # previously shared extensions moved into core
 php_OBSOLETES="php-session"
 php_CONTENTS="--exclude=php-config* --exclude=phpize*
-              etc/defaults/ ${inidir#/}/conf.d/.keep* etc/p*/php*
+              --exclude=${inidir#/}/conf.d/*.ini
+              etc/defaults/ ${inidir#/}/conf.d/ etc/p*/php*
               usr/bin/cygphp5-*.dll usr/bin/php*
               usr/sbin/ usr/share/doc/ usr/share/man/
               usr/share/pear/.registry/.channel.*/filter.reg
