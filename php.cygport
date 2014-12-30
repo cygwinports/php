@@ -1,7 +1,7 @@
 inherit apache2
 
 NAME="php"
-VERSION=5.5.19
+VERSION=5.6.4
 RELEASE=1
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
@@ -10,15 +10,20 @@ is a widely-used Open Source general-purpose scripting language that is
 especially suited for Web development and can be embedded into HTML."
 HOMEPAGE="http://www.php.net/"
 #SRC_URI="http://www.php.net/distributions/php-${VERSION}.tar.bz2"
-md5sum=4ef9fbd21570616f947cf28b1abb71ee
+md5sum=1b51009963451875be6b2622c599201c
 SRC_URI="http://pkgs.fedoraproject.org/repo/pkgs/php/php-${VERSION}-strip.tar.xz/${md5sum}/php-${VERSION}-strip.tar.xz"
 SRC_URI+=" template-builtin.reg template-ext.reg"
 PATCH_URI="
+	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.6.3-includedir.patch
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.3.0-recode.patch
+	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.6.3-libdb.patch
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.4.7-odbctimer.patch
-	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.3.1-systzdata-v10.patch
-	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.4.8-ldap_r.patch
-	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.4.9-phpinfo.patch
+	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.6.3-systzdata-v11.patch
+	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.6.3-ldap_r.patch
+	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.4.0-phpize.patch
+	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.6.3-fixheader.patch
+	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.6.3-phpinfo.patch
+	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.6.3-datetests.patch
 	5.3.4-cygwin-build.patch
 	5.3.4-libtool24.patch
 	5.3.8-curl-ssl.patch
@@ -26,7 +31,6 @@ PATCH_URI="
 	5.4.10-imap-cygwin.patch
 	5.3.4-intl-libstdc.patch
 	5.3.4-pspell-libpspell.patch
-	5.4.10-readline-funcs.patch
 	5.3.10-sybase-cygwin.patch
 	5.3.6-gcc-visibility.patch
 	5.4.19-posix-ttyname_r.patch
@@ -49,6 +53,7 @@ DIFF_EXCLUDES="aclocal.m4 configure generated_lists libtool.m4 lt*.m4 ltmain.sh 
 # openssl: phar
 # pcre: fileinfo
 # pdo: pdo_*
+# readline: phpdbg
 # session: memcache (PECL)
 # xml: xmlrpc
 #
@@ -70,13 +75,18 @@ common_args="
   --with-config-file-scan-dir=${inidir}/conf.d
   --with-layout=GNU
   --with-regex=system
+  --with-system-tzdata
 
   --enable-dom=yes
   --enable-filter=yes
   --enable-hash=yes
+  --with-mhash
   --enable-libxml=yes
   --with-openssl=yes
+  --with-system-ciphers
   --enable-pdo=yes
+  --with-readline=no
+  --with-libedit=yes
   --enable-session=yes
   --enable-xml=yes
   --with-libxml-dir=/usr
@@ -164,8 +174,6 @@ cli_args="
   --enable-phar=shared
   --enable-posix=shared
   --with-pspell=shared,/usr
-  --with-libedit=no
-  --with-readline=shared,/usr
   --with-recode=shared,/usr
   --with-mm=no
   --enable-shmop=shared
@@ -186,7 +194,8 @@ cli_args="
   --with-iconv-dir=/usr
   --enable-xmlwriter=shared
   --with-xsl=shared,/usr
-  --enable-zip=shared,/usr
+  --enable-zip=shared
+  --with-libzip=/usr
   --with-zlib=shared
 "
 
@@ -195,7 +204,7 @@ cli_args="
 PKG_NAMES="${NAME} ${NAME}-devel apache2-mod_php${VERSION%%.*}"
 php_CATEGORY="Interpreters PHP"
 # previously shared extensions moved into core
-php_OBSOLETES="php-session"
+php_OBSOLETES="php-readline php-session"
 php_CONTENTS="--exclude=php-config* --exclude=phpize*
               --exclude=${inidir#/}/conf.d/*.ini
               etc/defaults/ ${inidir#/}/conf.d/ etc/p*/php*
@@ -204,10 +213,12 @@ php_CONTENTS="--exclude=php-config* --exclude=phpize*
               usr/share/pear/.registry/.channel.*/filter.reg
               usr/share/pear/.registry/.channel.*/hash.reg
               usr/share/pear/.registry/.channel.*/pdo.reg
+              usr/share/pear/.registry/.channel.*/readline.reg
               usr/share/pear/.registry/.channel.*/session.reg
               usr/share/pear/doc/filter/CREDITS
               usr/share/pear/doc/hash/CREDITS
               usr/share/pear/doc/pdo/CREDITS
+              usr/share/pear/doc/readline/CREDITS
               usr/share/pear/doc/session/CREDITS
               usr/share/php/"
 php_devel_CATEGORY=${php_CATEGORY}
@@ -256,7 +267,7 @@ src_compile() {
 	mkdir -p ${B}/embed
 	cd ${B}/embed
 	CYGCONF_SOURCE="${S}" cygconf ${common_args} ${cli_args} \
-		--enable-cgi --enable-cli --enable-fpm --enable-embed
+		--enable-cgi --enable-cli --enable-fpm --enable-embed --enable-phpdbg
 
 	sed -e '/^LTCFLAGS=/d' -i libtool
 	sed -e 's/ -lphp5 / libphp5.la /g' -i Makefile
@@ -385,7 +396,7 @@ src_install() {
 
 	# builtin extensions
 	# when adding, be sure to update php_CONTENTS
-	for ext in filter hash pdo session
+	for ext in filter hash pdo readline session
 	do
 		docdir=/usr/share/pear/doc/${ext}
 		doc_len=$((${#docdir} + 8))	# /CREDITS
