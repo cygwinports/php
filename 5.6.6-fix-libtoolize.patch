@@ -1,0 +1,30 @@
+--- origsrc/php-5.6.6/Zend/Zend.m4	2015-02-25 11:43:02.687048300 -0600
++++ src/php-5.6.6/Zend/Zend.m4	2015-02-25 11:55:47.058209200 -0600
+@@ -75,7 +75,7 @@ dnl
+ dnl Ugly hack to check if dlsym() requires a leading underscore in symbol name.
+ dnl
+ AC_MSG_CHECKING([whether dlsym() requires a leading underscore in symbol names])
+-_LT_AC_TRY_DLOPEN_SELF([
++_LT_TRY_DLOPEN_SELF([
+   AC_MSG_RESULT(no)
+ ], [
+   AC_MSG_RESULT(yes)
+--- origsrc/php-5.6.6/configure.in	2015-02-25 12:35:38.344517100 -0600
++++ src/php-5.6.6/configure.in	2015-02-25 11:43:02.697048300 -0600
+@@ -1414,14 +1414,8 @@ case $host_alias in
+   ;;
+ esac
+ 
+-dnl Only allow AC_PROG_CXX and AC_PROG_CXXCPP if they are explicitly called (by PHP_REQUIRE_CXX).
+-dnl Otherwise AC_PROG_LIBTOOL fails if there is no working C++ compiler.
+-AC_PROVIDE_IFELSE([PHP_REQUIRE_CXX], [], [
+-  undefine([AC_PROG_CXX])
+-  AC_DEFUN([AC_PROG_CXX], [])
+-  undefine([AC_PROG_CXXCPP])
+-  AC_DEFUN([AC_PROG_CXXCPP], [php_prog_cxxcpp=disabled])
+-])
++AC_PROG_CXX
++AC_PROG_CXXCPP
+ AC_PROG_LIBTOOL
+ 
+ if test "$enable_debug" != "yes"; then

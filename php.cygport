@@ -1,7 +1,7 @@
 inherit apache2
 
 NAME="php"
-VERSION=5.6.5
+VERSION=5.6.6
 RELEASE=1
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
@@ -10,7 +10,7 @@ is a widely-used Open Source general-purpose scripting language that is
 especially suited for Web development and can be embedded into HTML."
 HOMEPAGE="http://www.php.net/"
 #SRC_URI="http://www.php.net/distributions/php-${VERSION}.tar.bz2"
-md5sum=0bb0becc5b22d5565fe11e755ea9ddf5
+md5sum=961faa2513d132d6d140272c8b8a9442
 SRC_URI="http://pkgs.fedoraproject.org/repo/pkgs/php/php-${VERSION}-strip.tar.xz/${md5sum}/php-${VERSION}-strip.tar.xz"
 SRC_URI+=" template-builtin.reg template-ext.reg"
 PATCH_URI="
@@ -25,7 +25,6 @@ PATCH_URI="
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.6.3-phpinfo.patch
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.6.3-datetests.patch
 	5.3.4-cygwin-build.patch
-	5.3.4-libtool24.patch
 	5.3.8-curl-ssl.patch
 	5.3.4-dba-gdbm_compat.patch
 	5.4.10-imap-cygwin.patch
@@ -36,6 +35,7 @@ PATCH_URI="
 	5.4.19-posix-ttyname_r.patch
 	5.4.20-configure-implicit-decls.patch
 	5.4.20-libmbfl-implicit-decls.patch
+	5.6.6-fix-libtoolize.patch
 "
 
 DIFF_EXCLUDES="aclocal.m4 configure generated_lists libtool.m4 lt*.m4 ltmain.sh php_config.h.in php_version.h tests"
@@ -220,7 +220,9 @@ php_CONTENTS="--exclude=php-config* --exclude=phpize*
               usr/share/pear/doc/pdo/CREDITS
               usr/share/pear/doc/readline/CREDITS
               usr/share/pear/doc/session/CREDITS
-              usr/share/php/"
+              usr/share/php/
+              var/lib/rebase/dynpath.d/php
+"
 php_devel_CATEGORY=${php_CATEGORY}
 php_devel_REQUIRES="autoconf gcc-core make"
 php_devel_CONTENTS="usr/bin/php-config usr/bin/phpize usr/include/
@@ -250,8 +252,8 @@ src_compile() {
 	# autotoolize
 	#
 	rm -f build/libtool.m4
-	ac_macrodir=build libtoolize --copy --force || error "libtoolize failed"
-	cat build/lt*.m4 >> build/libtool.m4
+	libtoolize --copy --force || error "libtoolize failed"
+	cat /usr/share/aclocal/libtool.m4 /usr/share/aclocal/lt{options,sugar,version,~obsolete}.m4 > build/libtool.m4
 
 	cygmake -j1 -B -f build/build.mk ZENDDIR="Zend"
 	# these are shipped and used by phpize
@@ -432,6 +434,8 @@ src_install() {
 </IfModule>
 _EOF
 
+	dodir /var/lib/rebase/dynpath.d
+	echo $(${D}/usr/bin/php-config --extension-dir) > ${D}/var/lib/rebase/dynpath.d/php
 }
 
 KEEP_LA_FILES="none"
