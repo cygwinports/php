@@ -1,7 +1,7 @@
 inherit apache2
 
 NAME="php"
-VERSION=5.6.6
+VERSION=5.6.7
 RELEASE=1
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
@@ -10,7 +10,7 @@ is a widely-used Open Source general-purpose scripting language that is
 especially suited for Web development and can be embedded into HTML."
 HOMEPAGE="http://www.php.net/"
 #SRC_URI="http://www.php.net/distributions/php-${VERSION}.tar.bz2"
-md5sum=961faa2513d132d6d140272c8b8a9442
+md5sum=d20bd7ebbaa0396cccf0928efe0cff67
 SRC_URI="http://pkgs.fedoraproject.org/repo/pkgs/php/php-${VERSION}-strip.tar.xz/${md5sum}/php-${VERSION}-strip.tar.xz"
 SRC_URI+=" template-builtin.reg template-ext.reg"
 PATCH_URI="
