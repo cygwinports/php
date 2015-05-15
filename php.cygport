@@ -1,7 +1,7 @@
 inherit apache2
 
 NAME="php"
-VERSION=5.6.8
+VERSION=5.6.9
 RELEASE=1
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
@@ -10,7 +10,7 @@ is a widely-used Open Source general-purpose scripting language that is
 especially suited for Web development and can be embedded into HTML."
 HOMEPAGE="http://www.php.net/"
 #SRC_URI="http://www.php.net/distributions/php-${VERSION}.tar.bz2"
-md5sum=da3376b10e7492f1ba131556292a061d
+md5sum=dbf034685ce856f2aa3c70a9a707f9f5
 SRC_URI="http://pkgs.fedoraproject.org/repo/pkgs/php/php-${VERSION}-strip.tar.xz/${md5sum}/php-${VERSION}-strip.tar.xz"
 SRC_URI+=" template-builtin.reg template-ext.reg"
 PATCH_URI="
@@ -18,7 +18,7 @@ PATCH_URI="
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.3.0-recode.patch
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.6.3-libdb.patch
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.4.7-odbctimer.patch
-	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.6.3-systzdata-v11.patch
+	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.6.9-systzdata-v12.patch
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.6.3-ldap_r.patch
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.4.0-phpize.patch
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.6.3-fixheader.patch
