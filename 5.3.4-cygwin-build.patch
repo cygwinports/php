@@ -101,7 +101,7 @@
      INSTALL_IT="$INSTALL_IT $SAPI_LIBTOOL" 
      ;;
 +  *cygwin*)
-+    EXTRA_LDFLAGS="-shrext .so $EXTRA_LDFLAGS -L`$APXS -q LIBDIR` -lhttpd2core"
++    EXTRA_LDFLAGS="-shrext .so $EXTRA_LDFLAGS -L`$APXS -q LIBDIR` -lhttpd"
 +    PHP_SELECT_SAPI(apache2handler, shared, mod_php5.c sapi_apache2.c apache_config.c php_functions.c, $APACHE_CFLAGS) 
 +    INSTALL_IT="$INSTALL_IT $SAPI_LIBTOOL"
 +    ;;

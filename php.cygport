@@ -1,8 +1,8 @@
-inherit apache2
+inherit httpd
 
 NAME="php"
 VERSION=5.6.9
-RELEASE=1
+RELEASE=2
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
 DESCRIPTION="PHP (recursive acronym for 'PHP: Hypertext Preprocessor')
@@ -201,7 +201,7 @@ cli_args="
 
 # packaging
 #
-PKG_NAMES="${NAME} ${NAME}-devel apache2-mod_php${VERSION%%.*}"
+PKG_NAMES="${NAME} ${NAME}-devel httpd-mod_php${VERSION%%.*}"
 php_CATEGORY="Interpreters PHP"
 # previously shared extensions moved into core
 php_OBSOLETES="php-readline php-session"
@@ -228,8 +228,9 @@ php_devel_REQUIRES="autoconf gcc-core make"
 php_devel_CONTENTS="usr/bin/php-config usr/bin/phpize usr/include/
 	usr/lib/lib* usr/lib/php/build/
 	usr/share/man/man1/php-config.* usr/share/man/man1/phpize.*"
-apache2_mod_php5_CONTENTS="${APACHE2_SYSCONFDIR#/} etc/p*/apache2-*.sh ${APACHE2_LIBEXECDIR#/}"
-apache2_mod_php5_SUMMARY="Embedded PHP for Apache 2.x"
+#httpd_mod_php5_OBSOLETES="apache2-mod_php5"
+httpd_mod_php5_CONTENTS="${HTTPD_SYSCONFDIR#/} ${HTTPD_LIBEXECDIR#/}"
+httpd_mod_php5_SUMMARY="Embedded PHP for Apache HTTP Server"
 
 # This method provides 50+ modules, so better automate this:
 for ext in $(echo ${cli_args} | sed -e 's# #\n#g' | grep shared \
@@ -295,7 +296,7 @@ src_compile() {
 	cd ${B}/apache2
 
 	CYGCONF_SOURCE="${S}" cygconf \
-		--disable-all --disable-cli --with-apxs2=${APXS2} ${common_args}
+		--disable-all --disable-cli --with-apxs2=${HTTPD_APXS} ${common_args}
 
 	# the -a flag adds the module to httpd.conf
 	sed -e 's#-prefer-non-pic -static##g' \
@@ -303,7 +304,7 @@ src_compile() {
 		-e 's#-i -a -n#-i -n#g' \
 		-i Makefile
 
-	# Apache2 expects mods to have .so suffix on all platforms
+	# HTTPD expects mods to have .so suffix on all platforms
 	cygmake libphp${VERSION%%.*}.la \
 		PHP_GLOBAL_OBJS='' \
 		ZEND_EXTRA_LIBS="${B}/embed/libphp${VERSION%%.*}.la"
@@ -422,15 +423,19 @@ src_install() {
 			${S}/template-builtin.reg > ${D}${regdir}/${ext}.reg
 	done
 
-	# Un/load mod_php5 from httpd.conf on postinstall/preremove
-	dodir /etc/postinstall /etc/preremove ${APACHE2_SYSCONFDIR}
-	echo "${APXS2} -e -a -n php5 ${APACHE2_LIBEXECDIR}/cygphp5.so" > ${D}/etc/postinstall/apache2-mod_php5.sh
-	echo "${APXS2} -e -A -n php5 ${APACHE2_LIBEXECDIR}/cygphp5.so" > ${D}/etc/preremove/apache2-mod_php5.sh
-
-	cat > ${D}${APACHE2_SYSCONFDIR}/mod_php5.conf <<_EOF
-<IfModule php5_module>
-    AddType application/x-httpd-php .php .phtml
-    AddType application/x-httpd-php-source .phps
+	# Add httpd.conf snippet
+	dodir ${HTTPD_SYSCONFDIR}
+	cat > ${D}${HTTPD_SYSCONFDIR}/php5.conf <<_EOF
+LoadModule php5_module modules/libphp5.so
+<IfModule mod_php5.c>
+    DirectoryIndex index.php
+    AddType text/html .php
+    <FilesMatch \.php$>
+        SetHandler application/x-httpd-php
+    </FilesMatch>
+    <FilesMatch \.phps$>
+        SetHandler application/x-httpd-php-source
+    </FilesMatch>
 </IfModule>
 _EOF
 
