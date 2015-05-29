@@ -2,7 +2,7 @@ inherit httpd
 
 NAME="php"
 VERSION=5.6.9
-RELEASE=3
+RELEASE=4
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
 DESCRIPTION="PHP (recursive acronym for 'PHP: Hypertext Preprocessor')
@@ -231,7 +231,7 @@ php_devel_CONTENTS="usr/bin/php-config usr/bin/phpize usr/include/
 	usr/lib/lib* usr/lib/php/build/
 	usr/share/man/man1/php-config.* usr/share/man/man1/phpize.*"
 #httpd_mod_php5_OBSOLETES="apache2-mod_php5"
-httpd_mod_php5_CONTENTS="${HTTPD_SYSCONFDIR#/} ${HTTPD_LIBEXECDIR#/}"
+httpd_mod_php5_CONTENTS="${HTTPD_SYSCONFMODULESDIR#/} ${HTTPD_LIBEXECDIR#/}"
 httpd_mod_php5_SUMMARY="Embedded PHP for Apache HTTP Server"
 
 # This method provides 50+ modules, so better automate this:
@@ -431,14 +431,17 @@ src_install() {
 			${S}/template-builtin.reg > ${D}${regdir}/${ext}.reg
 	done
 
-	# Add httpd.conf snippet
-	dodir ${HTTPD_SYSCONFDIR}
-	cat > ${D}${HTTPD_SYSCONFDIR}/php5.conf <<_EOF
+	dodir ${HTTPD_SYSCONFMODULESDIR}
+	cat > ${D}${HTTPD_SYSCONFMODULESDIR}/mod_php5.conf <<_EOF
 # mod_php5 is not thread-safe
 <IfModule prefork.c>
   LoadModule php5_module modules/libphp5.so
 </IfModule>
+_EOF
 
+	# Add httpd.conf snippet
+	dodir ${HTTPD_SYSCONFDIR}
+	cat > ${D}${HTTPD_SYSCONFDIR}/php5.conf <<_EOF
 AddType text/html .php
 DirectoryIndex index.php
 
@@ -451,7 +454,7 @@ DirectoryIndex index.php
     </FilesMatch>
 </IfModule>
 
-# if using a thread-safe MPM, use php-fpm instead
+# if using a thread-safe MPM, or mod_php5 is not installed, use php-fpm instead
 # requires: mod_proxy, mod_proxy_fcgi
 <IfModule !mod_php5.c>
     <FilesMatch \.php$>
@@ -460,6 +463,7 @@ DirectoryIndex index.php
     </FilesMatch>
 </IfModule>
 _EOF
+	make_etc_defaults ${HTTPD_SYSCONFDIR}/php5.conf
 
 	dodir /var/lib/rebase/dynpath.d
 	echo $(${D}/usr/bin/php-config --extension-dir) > ${D}/var/lib/rebase/dynpath.d/php
