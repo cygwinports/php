@@ -1,0 +1,22 @@
+The joys of not building in a chroot...
+
+--- origsrc/php-5.6.9/sapi/apache2handler/config.m4	2015-05-29 02:10:28.453265000 -0500
++++ src/php-5.6.9/sapi/apache2handler/config.m4	2015-05-29 03:02:51.675903500 -0500
+@@ -114,17 +114,6 @@ if test "$PHP_APXS2" != "no"; then
+     ;;
+   esac
+ 
+-  if test "$APACHE_VERSION" -lt 2004001; then
+-    APXS_MPM=`$APXS -q MPM_NAME`
+-    if test "$APXS_MPM" != "prefork" && test "$APXS_MPM" != "peruser" && test "$APXS_MPM" != "itk"; then
+-      PHP_BUILD_THREAD_SAFE
+-    fi
+-  else
+-    APACHE_THREADED_MPM=`$APXS_HTTPD -V | grep 'threaded:.*yes'`
+-    if test -n "$APACHE_THREADED_MPM"; then
+-      PHP_BUILD_THREAD_SAFE
+-    fi
+-  fi
+   AC_MSG_RESULT(yes)
+   PHP_SUBST(APXS)
+ else

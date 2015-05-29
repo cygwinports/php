@@ -2,7 +2,7 @@ inherit httpd
 
 NAME="php"
 VERSION=5.6.9
-RELEASE=2
+RELEASE=3
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
 DESCRIPTION="PHP (recursive acronym for 'PHP: Hypertext Preprocessor')
@@ -12,7 +12,7 @@ HOMEPAGE="http://www.php.net/"
 #SRC_URI="http://www.php.net/distributions/php-${VERSION}.tar.bz2"
 md5sum=dbf034685ce856f2aa3c70a9a707f9f5
 SRC_URI="http://pkgs.fedoraproject.org/repo/pkgs/php/php-${VERSION}-strip.tar.xz/${md5sum}/php-${VERSION}-strip.tar.xz"
-SRC_URI+=" template-builtin.reg template-ext.reg"
+SRC_URI+=" template-builtin.reg template-ext.reg php-fpm.init"
 PATCH_URI="
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.6.3-includedir.patch
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.3.0-recode.patch
@@ -36,6 +36,7 @@ PATCH_URI="
 	5.4.20-configure-implicit-decls.patch
 	5.4.20-libmbfl-implicit-decls.patch
 	5.6.6-fix-libtoolize.patch
+	5.6.9-apache2handler-zts.patch
 "
 
 DIFF_EXCLUDES="aclocal.m4 configure generated_lists libtool.m4 lt*.m4 ltmain.sh php_config.h.in php_version.h tests"
@@ -208,6 +209,7 @@ php_OBSOLETES="php-readline php-session"
 php_CONTENTS="--exclude=php-config* --exclude=phpize*
               --exclude=${inidir#/}/conf.d/*.ini
               etc/defaults/ ${inidir#/}/conf.d/ etc/p*/php*
+              etc/rc.d/init.d/php-fpm
               usr/bin/cygphp5-*.dll usr/bin/php*
               usr/sbin/ usr/share/doc/ usr/share/man/
               usr/share/pear/.registry/.channel.*/filter.reg
@@ -346,6 +348,12 @@ src_install() {
 	newins ${S}/php.ini-production php.ini
 	make_etc_defaults ${inidir}/php.ini
 
+	mv ${D}${inidir}/php-fpm.conf{.default,}
+	make_etc_defaults ${inidir}/php-fpm.conf
+
+	exeinto /etc/rc.d/init.d
+	newexe ${S}/php-fpm.init php-fpm
+
 	# add .ini files for each extension, so that it's loaded once installed
 	local date=$(date +%F)
 	local time=$(date +%T)
@@ -426,15 +434,29 @@ src_install() {
 	# Add httpd.conf snippet
 	dodir ${HTTPD_SYSCONFDIR}
 	cat > ${D}${HTTPD_SYSCONFDIR}/php5.conf <<_EOF
-LoadModule php5_module modules/libphp5.so
+# mod_php5 is not thread-safe
+<IfModule prefork.c>
+  LoadModule php5_module modules/libphp5.so
+</IfModule>
+
+AddType text/html .php
+DirectoryIndex index.php
+
 <IfModule mod_php5.c>
-    DirectoryIndex index.php
-    AddType text/html .php
     <FilesMatch \.php$>
         SetHandler application/x-httpd-php
     </FilesMatch>
     <FilesMatch \.phps$>
         SetHandler application/x-httpd-php-source
+    </FilesMatch>
+</IfModule>
+
+# if using a thread-safe MPM, use php-fpm instead
+# requires: mod_proxy, mod_proxy_fcgi
+<IfModule !mod_php5.c>
+    <FilesMatch \.php$>
+        # value depends on /etc/php5/php-fpm.conf:listen=; this is the default
+        SetHandler "proxy:fcgi://localhost:9000"
     </FilesMatch>
 </IfModule>
 _EOF
