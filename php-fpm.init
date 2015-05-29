@@ -10,7 +10,7 @@
 
 PATH=/sbin:/usr/sbin:/usr/bin
 PREFIX=/usr
-CONFIG=/etc/httpd/conf/php-fpm.conf
+CONFIG=/etc/php5/php-fpm.conf
 PIDFILE=/var/run/php-fpm.pid
 LOGFILE=/var/log/php-fpm.log
 
