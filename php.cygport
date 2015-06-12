@@ -1,8 +1,8 @@
 inherit httpd
 
 NAME="php"
-VERSION=5.6.9
-RELEASE=4
+VERSION=5.6.10
+RELEASE=1
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
 DESCRIPTION="PHP (recursive acronym for 'PHP: Hypertext Preprocessor')
@@ -10,7 +10,7 @@ is a widely-used Open Source general-purpose scripting language that is
 especially suited for Web development and can be embedded into HTML."
 HOMEPAGE="http://www.php.net/"
 #SRC_URI="http://www.php.net/distributions/php-${VERSION}.tar.bz2"
-md5sum=dbf034685ce856f2aa3c70a9a707f9f5
+md5sum=8ccebfdee11a1cf462eb098408eb75af
 SRC_URI="http://pkgs.fedoraproject.org/repo/pkgs/php/php-${VERSION}-strip.tar.xz/${md5sum}/php-${VERSION}-strip.tar.xz"
 SRC_URI+=" template-builtin.reg template-ext.reg php-fpm.init"
 PATCH_URI="
@@ -57,8 +57,6 @@ DIFF_EXCLUDES="aclocal.m4 configure generated_lists libtool.m4 lt*.m4 ltmain.sh 
 # readline: phpdbg
 # session: memcache (PECL)
 # xml: xmlrpc
-#
-# gd: not compatible with system libgd, https://bugs.php.net/bug.php?id=60108
 
 # location of php.ini files
 inidir=/etc/php${VERSION%%.*}
@@ -118,7 +116,7 @@ cli_args="
   --enable-exif=shared
   --enable-fileinfo=shared
   --enable-ftp=shared
-  --with-gd=shared
+  --with-gd=shared,/usr
   --with-vpx-dir=/usr
   --with-jpeg-dir=/usr
   --with-png-dir=/usr
