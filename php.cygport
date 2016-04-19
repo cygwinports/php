@@ -270,7 +270,9 @@ src_compile() {
 	mkdir -p ${B}/embed
 	cd ${B}/embed
 	CYGCONF_SOURCE="${S}" cygconf ${common_args} ${cli_args} \
-		--enable-cgi --enable-cli --enable-fpm --enable-embed --enable-phpdbg
+		--enable-cgi --enable-cli \
+		--enable-fpm --with-fpm-acl \
+		--enable-embed --enable-phpdbg
 
 	sed -e '/^LTCFLAGS=/d' -i libtool
 	sed -e 's/ -lphp5 / libphp5.la /g' -i Makefile
