@@ -1,14 +1,3 @@
---- origsrc/php-5.3.10/ext/mssql/config.m4	2008-10-04 07:55:21.000000000 -0500
-+++ src/php-5.3.10/ext/mssql/config.m4	2012-03-16 16:41:44.166678700 -0500
-@@ -38,7 +38,7 @@ if test "$PHP_MSSQL" != "no"; then
-     fi
-   fi  
- 
--  if test ! -r "$FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/libsybdb.a" && test ! -r "$FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/libsybdb.so"; then
-+  if test ! -r "$FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/libsybdb.a" && test ! -r "$FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/libsybdb.$SHLIB_SUFFIX_NAME"; then
-      AC_MSG_ERROR(Could not find $FREETDS_INSTALLATION_DIR/$PHP_LIBDIR/libsybdb.[a|so])
-   fi
- 
 --- origsrc/php-5.3.10/ext/pdo_dblib/config.m4	2011-05-15 00:49:34.000000000 -0500
 +++ src/php-5.3.10/ext/pdo_dblib/config.m4	2012-03-16 16:40:09.053312900 -0500
 @@ -46,7 +46,7 @@ if test "$PHP_PDO_DBLIB" != "no"; then

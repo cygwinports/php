@@ -5,12 +5,12 @@
 # chkconfig: 2345 90 60
 # description: php-fpm is the PHP FastCGI Process Manager
 # processname: php-fpm
-# config: /etc/php5/php-fpm.conf
+# config: /etc/php-fpm.conf
 # pidfile: /var/run/php-fpm.pid
 
 PATH=/sbin:/usr/sbin:/usr/bin
 PREFIX=/usr
-CONFIG=/etc/php5/php-fpm.conf
+CONFIG=/etc/php-fpm.conf
 PIDFILE=/var/run/php-fpm.pid
 LOGFILE=/var/log/php-fpm.log
 

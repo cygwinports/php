@@ -1,7 +1,7 @@
 inherit httpd
 
 NAME="php"
-VERSION=5.6.27
+VERSION=7.0.13
 RELEASE=1
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
@@ -9,22 +9,19 @@ DESCRIPTION="PHP (recursive acronym for 'PHP: Hypertext Preprocessor')
 is a widely-used Open Source general-purpose scripting language that is
 especially suited for Web development and can be embedded into HTML."
 HOMEPAGE="http://www.php.net/"
-#SRC_URI="http://www.php.net/distributions/php-${VERSION}.tar.bz2"
-md5sum=e227111423df1719b910cf31e2bbe38b
-SRC_URI="http://pkgs.fedoraproject.org/repo/pkgs/php/php-${VERSION}-strip.tar.xz/${md5sum}/php-${VERSION}-strip.tar.xz"
+SRC_URI="http://www.php.net/distributions/php-${VERSION}.tar.xz"
 SRC_URI+=" template-builtin.reg template-ext.reg php-fpm.init"
 PATCH_URI="
-	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.6.3-includedir.patch
+	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-7.0.0-includedir.patch
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.3.0-recode.patch
-	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.6.17-libdb.patch
-	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.4.7-odbctimer.patch
-	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.6.13-systzdata-v12.patch
+	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-7.0.2-libdb.patch
+	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-7.0.0-systzdata-v14.patch
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.6.3-ldap_r.patch
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.4.0-phpize.patch
-	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.6.3-fixheader.patch
+	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-7.0.0-fixheader.patch
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.6.3-phpinfo.patch
 	http://pkgs.fedoraproject.org/cgit/php.git/plain/php-5.6.3-datetests.patch
-	5.3.4-cygwin-build.patch
+	7.0.13-cygwin-build.patch
 	5.3.8-curl-ssl.patch
 	5.3.4-dba-gdbm_compat.patch
 	5.4.10-imap-cygwin.patch
@@ -50,7 +47,7 @@ DIFF_EXCLUDES="aclocal.m4 configure generated_lists libtool.m4 lt*.m4 ltmain.sh 
 # hash: phar, session
 # intl: sqlite3 and pdo_sqlite (optional and only with bundled libsqlite3)
 # libxml: simplexml, soap, xsl
-# mysqlnd: mysql, mysqli, pdo_mysql (if configured to use mysqlnd)
+# mysqlnd: mysqli, pdo_mysql (if configured to use mysqlnd)
 # openssl: phar
 # pcre: fileinfo
 # pdo: pdo_*
@@ -59,21 +56,19 @@ DIFF_EXCLUDES="aclocal.m4 configure generated_lists libtool.m4 lt*.m4 ltmain.sh 
 # xml: xmlrpc
 
 # location of php.ini files
-inidir=/etc/php${VERSION%%.*}
+inidir=/etc/php.d
 
 # required for all configure runs
 common_args="
   --cache-file=../config.cache
-  --sysconfdir=${inidir}
   --libdir=/usr/lib/php
   --datadir=/usr/share/php
 
   --disable-static
   --disable-rpath
-  --with-config-file-path=${inidir}
-  --with-config-file-scan-dir=${inidir}/conf.d
+  --with-config-file-path=/etc
+  --with-config-file-scan-dir=${inidir}
   --with-layout=GNU
-  --with-regex=system
   --with-system-tzdata
 
   --enable-dom=yes
@@ -117,13 +112,11 @@ cli_args="
   --enable-fileinfo=shared
   --enable-ftp=shared
   --with-gd=shared,/usr
-  --with-vpx-dir=/usr
   --with-jpeg-dir=/usr
   --with-png-dir=/usr
   --with-zlib-dir=/usr
   --with-xpm-dir=/usr
   --with-freetype-dir=/usr
-  --with-t1lib=/usr
   --enable-gd-native-ttf
   --with-gettext=shared
   --with-gmp=shared,/usr
@@ -132,6 +125,7 @@ cli_args="
   --with-kerberos=no
   --with-imap-ssl=yes
   --with-interbase=no
+  --enable-json=shared
   --with-ldap=shared,/usr
   --with-ldap-sasl=/usr
   --enable-intl=shared
@@ -141,8 +135,6 @@ cli_args="
   --enable-mbregex=yes
   --enable-mbregex_backtrack=yes
   --with-mcrypt=shared,/usr
-  --with-mssql=shared,/usr
-  --with-mysql=shared,mysqlnd
   --with-mysql-sock=/var/run/mysql.sock
   --with-mysqli=shared,mysqlnd
   --enable-embedded_mysqli=no
@@ -180,7 +172,6 @@ cli_args="
   --with-snmp=no
   --enable-soap=shared
   --with-sqlite3=shared,/usr
-  --with-sybase-ct=shared,/usr
   --enable-sockets=shared
   --enable-sysvmsg=shared
   --enable-sysvsem=shared
@@ -205,10 +196,10 @@ php_CATEGORY="Interpreters PHP"
 # previously shared extensions moved into core
 php_OBSOLETES="php-readline php-session"
 php_CONTENTS="--exclude=php-config* --exclude=phpize*
-              --exclude=${inidir#/}/conf.d/*.ini
-              etc/defaults/ ${inidir#/}/conf.d/ etc/p*/php*
+              --exclude=${inidir#/}/*.ini
+              etc/defaults/ ${inidir#/} etc/p*/php.sh
               etc/rc.d/init.d/php-fpm
-              usr/bin/cygphp5-*.dll usr/bin/php*
+              usr/bin/cygphp7-*.dll usr/bin/php*
               usr/sbin/ usr/share/doc/ usr/share/man/
               usr/share/pear/.registry/.channel.*/filter.reg
               usr/share/pear/.registry/.channel.*/hash.reg
@@ -228,23 +219,28 @@ php_devel_REQUIRES="autoconf gcc-core make"
 php_devel_CONTENTS="usr/bin/php-config usr/bin/phpize usr/include/
 	usr/lib/lib* usr/lib/php/build/
 	usr/share/man/man1/php-config.* usr/share/man/man1/phpize.*"
-#httpd_mod_php5_OBSOLETES="apache2-mod_php5"
-httpd_mod_php5_CONTENTS="${HTTPD_SYSCONFMODULESDIR#/} ${HTTPD_LIBEXECDIR#/}"
-httpd_mod_php5_SUMMARY="Embedded PHP for Apache HTTP Server"
+httpd_mod_php7_OBSOLETES="httpd-mod_php5"
+httpd_mod_php7_CONTENTS="${HTTPD_SYSCONFMODULESDIR#/} ${HTTPD_LIBEXECDIR#/}"
+httpd_mod_php7_SUMMARY="Embedded PHP for Apache HTTP Server"
 
 # This method provides 50+ modules, so better automate this:
 for ext in $(echo ${cli_args} | sed -e 's# #\n#g' | grep shared \
              | sed -e 's#^--[a-z]*-##g' -e 's#=.*##g' -e 's#-#_#g' -e 's#[a-z]*odbc#odbc#')
 do
 	PKG_NAMES+=" php-${ext}"
-	declare php_${ext}_CONTENTS="${inidir#/}/conf.d/${ext}.ini
+	declare php_${ext}_CONTENTS="${inidir#/}/${ext}.ini
 				     usr/lib/php/*/${ext}.dll
 				     usr/share/pear/doc/${ext}/
 				     usr/share/pear/.registry/.channel.*/${ext}.reg"
 	declare php_${ext}_SUMMARY="PHP ${ext} extension"
 done
-php_phar_CONTENTS+=" usr/bin/phar*"
 unset ext
+php_phar_CONTENTS+=" usr/bin/phar*"
+# obsoleted by php7
+php_debuginfo_OBSOLETES="php-jsonc-debuginfo"
+php_json_OBSOLETES="php-jsonc"
+php_mysqli_OBSOLETES="php-mysql"
+php_pdo_dblib_OBSOLETES="php-mssql php-sybase_ct"
 
 src_compile() {
 	cd ${S}
@@ -275,7 +271,7 @@ src_compile() {
 		--enable-embed --enable-phpdbg
 
 	sed -e '/^LTCFLAGS=/d' -i libtool
-	sed -e 's/ -lphp5 / libphp5.la /g' -i Makefile
+	sed -e 's/ -lphp7 / libphp7.la /g' -i Makefile
 
 	# first make the common sources library
 	cygmake libphp${VERSION%%.*}.la \
@@ -292,7 +288,7 @@ src_compile() {
 
 
 	#
-	# Apache2 mod_php5 SAPI
+	# Apache2 mod_php7 SAPI
 	#
 	mkdir -p ${B}/apache2
 	cd ${B}/apache2
@@ -330,8 +326,8 @@ src_install() {
 	cd ${B}/embed
 	cygmake -j1 install INSTALL_ROOT=${D} INSTALL_IT=
 	# install the shared lib (normally done by INSTALL_IT)
-	dobin libs/cygphp5-*.dll
-	dolib libs/libphp5.dll.a
+	dobin libs/cygphp7-*.dll
+	dolib libs/libphp7.dll.a
 
 	# install the real executables, not the libtool stubs
 	cd ${B}
@@ -344,12 +340,13 @@ src_install() {
 		-i ${D}/usr/bin/php-config
 
 	# provide default php.ini
-	insinto ${inidir}
+	insinto /etc
 	newins ${S}/php.ini-production php.ini
-	make_etc_defaults ${inidir}/php.ini
+	make_etc_defaults /etc/php.ini
 
-	mv ${D}${inidir}/php-fpm.conf{.default,}
-	make_etc_defaults ${inidir}/php-fpm.conf
+	mv ${D}/etc/php-fpm.conf{.default,}
+	mv ${D}/etc/php-fpm.d/www.conf{.default,}
+	make_etc_defaults /etc/php-fpm.{conf,d}
 
 	exeinto /etc/rc.d/init.d
 	newexe ${S}/php-fpm.init php-fpm
@@ -362,7 +359,7 @@ src_install() {
 	local xdir=$(${D}/usr/bin/php-config --extension-dir)
 	local dll ext docdir path_len summary_len p
 
-	keepdir ${inidir}/conf.d
+	keepdir ${inidir}
 	dodir ${regdir}
 
 	for x in ${D}${xdir}/*.dll
@@ -377,9 +374,9 @@ src_install() {
 		# create .ini file for automatic extension loading
 		if $(${OBJDUMP} -p ${x} | grep -q zend_startup_module)
 		then
-			echo "zend_extension = ${xdir}/${dll}" >> ${D}${inidir}/conf.d/${ext}.ini
+			echo "zend_extension = ${xdir}/${dll}" >> ${D}${inidir}/${ext}.ini
 		else
-			echo "extension = ${dll}" >> ${D}${inidir}/conf.d/${ext}.ini
+			echo "extension = ${dll}" >> ${D}${inidir}/${ext}.ini
 		fi
 
 		# register extension with pecl to prevent accidental
@@ -432,20 +429,20 @@ src_install() {
 	done
 
 	dodir ${HTTPD_SYSCONFMODULESDIR}
-	cat > ${D}${HTTPD_SYSCONFMODULESDIR}/mod_php5.conf <<_EOF
-# mod_php5 is not thread-safe
+	cat > ${D}${HTTPD_SYSCONFMODULESDIR}/mod_php7.conf <<_EOF
+# mod_php7 is not thread-safe
 <IfModule prefork.c>
-  LoadModule php5_module modules/libphp5.so
+  LoadModule php7_module modules/libphp7.so
 </IfModule>
 _EOF
 
 	# Add httpd.conf snippet
 	dodir ${HTTPD_SYSCONFDIR}
-	cat > ${D}${HTTPD_SYSCONFDIR}/php5.conf <<_EOF
+	cat > ${D}${HTTPD_SYSCONFDIR}/php7.conf <<_EOF
 AddType text/html .php
 DirectoryIndex index.php
 
-<IfModule mod_php5.c>
+<IfModule mod_php7.c>
     <FilesMatch \.php$>
         SetHandler application/x-httpd-php
     </FilesMatch>
@@ -454,16 +451,16 @@ DirectoryIndex index.php
     </FilesMatch>
 </IfModule>
 
-# if using a thread-safe MPM, or mod_php5 is not installed, use php-fpm instead
+# if using a thread-safe MPM, or mod_php7 is not installed, use php-fpm instead
 # requires: mod_proxy, mod_proxy_fcgi
-<IfModule !mod_php5.c>
+<IfModule !mod_php7.c>
     <FilesMatch \.php$>
-        # value depends on /etc/php5/php-fpm.conf:listen=; this is the default
+        # value depends on /etc/php-fpm.conf:listen=; this is the default
         SetHandler "proxy:fcgi://localhost:9000"
     </FilesMatch>
 </IfModule>
 _EOF
-	make_etc_defaults ${HTTPD_SYSCONFDIR}/php5.conf
+	make_etc_defaults ${HTTPD_SYSCONFDIR}/php7.conf
 
 	dodir /var/lib/rebase/dynpath.d
 	echo $(${D}/usr/bin/php-config --extension-dir) > ${D}/var/lib/rebase/dynpath.d/php
