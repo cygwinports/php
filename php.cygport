@@ -2,7 +2,7 @@ inherit httpd
 
 NAME="php"
 VERSION=7.0.14
-RELEASE=1
+RELEASE=2
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
 DESCRIPTION="PHP (recursive acronym for 'PHP: Hypertext Preprocessor')
@@ -331,7 +331,7 @@ src_install() {
 
 	# install the real executables, not the libtool stubs
 	cd ${B}
-	dobin embed/sapi/c*/*.exe
+	dobin embed/sapi/[cp]*/*.exe
 	dosbin embed/sapi/fpm/php-fpm.exe
 
 	# sanitize php-config
