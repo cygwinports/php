@@ -1,8 +1,8 @@
 inherit httpd
 
 NAME="php"
-VERSION=7.0.14
-RELEASE=2
+VERSION=7.0.15
+RELEASE=1
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
 DESCRIPTION="PHP (recursive acronym for 'PHP: Hypertext Preprocessor')
