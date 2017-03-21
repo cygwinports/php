@@ -1,7 +1,7 @@
 inherit httpd
 
 NAME="php"
-VERSION=7.0.15
+VERSION=7.0.17
 RELEASE=1
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
@@ -34,6 +34,7 @@ PATCH_URI="
 	5.4.20-libmbfl-implicit-decls.patch
 	5.6.6-fix-libtoolize.patch
 	5.6.9-apache2handler-zts.patch
+	7.0.17-pcre-jit-off.patch
 "
 
 DIFF_EXCLUDES="aclocal.m4 configure generated_lists libtool.m4 lt*.m4 ltmain.sh php_config.h.in php_version.h tests"
