@@ -1,0 +1,11 @@
+--- origsrc/php-7.1.9/Zend/zend_alloc.c	2017-08-30 11:13:20.000000000 -0500
++++ src/php-7.1.9/Zend/zend_alloc.c	2017-09-26 21:43:38.087650400 -0500
+@@ -719,7 +719,7 @@ static void *zend_mm_chunk_alloc_int(siz
+ 		/* chunk has to be aligned */
+ 		zend_mm_munmap(ptr, size);
+ 		ptr = zend_mm_mmap(size + alignment - REAL_PAGE_SIZE);
+-#ifdef _WIN32
++#if defined(_WIN32) || defined(__CYGWIN__)
+ 		offset = ZEND_MM_ALIGNED_OFFSET(ptr, alignment);
+ 		zend_mm_munmap(ptr, size + alignment - REAL_PAGE_SIZE);
+ 		ptr = zend_mm_mmap_fixed((void*)((char*)ptr + (alignment - offset)), size);
