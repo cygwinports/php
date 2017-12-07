@@ -1,7 +1,7 @@
 inherit httpd
 
 NAME="php"
-VERSION=7.1.9
+VERSION=7.1.12
 RELEASE=1
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
@@ -22,7 +22,7 @@ PATCH_URI="
 	http://pkgs.fedoraproject.org/cgit/rpms/php.git/plain/php-5.6.3-phpinfo.patch
 	http://pkgs.fedoraproject.org/cgit/rpms/php.git/plain/php-5.6.3-datetests.patch
 	7.0.13-cygwin-build.patch
-	5.3.8-curl-ssl.patch
+	7.1.12-curl-ssl.patch
 	5.3.4-dba-gdbm_compat.patch
 	5.4.10-imap-cygwin.patch
 	5.3.4-intl-libstdc.patch
@@ -282,7 +282,7 @@ src_compile() {
 
 	# then make everything else
 	# c-client is static only so we need to circumvent libtool to link
-	cygmake \
+	cygmake -j1 \
 		IMAP_SHARED_LIBADD='-Wl,/usr/lib/c-client.a,-lssl,-lcrypto' \
 		PHP_GLOBAL_OBJS='' \
 		ZEND_EXTRA_LIBS="${B}/embed/libphp${VERSION%%.*}.la"
@@ -466,5 +466,3 @@ _EOF
 	dodir /var/lib/rebase/dynpath.d
 	echo $(${D}/usr/bin/php-config --extension-dir) > ${D}/var/lib/rebase/dynpath.d/php
 }
-
-KEEP_LA_FILES="none"

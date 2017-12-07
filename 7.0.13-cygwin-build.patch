@@ -13,12 +13,12 @@
 @@ -113,7 +112,7 @@ clean:
  	find . -name \*.gcno -o -name \*.gcda | xargs rm -f
  	find . -name \*.lo -o -name \*.o | xargs rm -f
- 	find . -name \*.la -o -name \*.a | xargs rm -f 
+ 	find . -name \*.la -o -name \*.a | xargs rm -f
 -	find . -name \*.so | xargs rm -f
 +	find . -name \*.$(SHLIB_DL_SUFFIX_NAME) | xargs rm -f
  	find . -name .libs -a -type d|xargs rm -rf
  	rm -f libphp$(PHP_MAJOR_VERSION).la $(SAPI_CLI_PATH) $(SAPI_CGI_PATH) $(SAPI_MILTER_PATH) $(SAPI_LITESPEED_PATH) $(SAPI_FPM_PATH) $(OVERALL_TARGET) modules/* libs/*
- 
+
 --- origsrc/php-7.0.13/acinclude.m4	2016-11-24 17:21:50.005167000 -0600
 +++ src/php-7.0.13/acinclude.m4	2016-11-24 17:26:46.357692100 -0600
 @@ -842,6 +842,10 @@ AC_DEFUN([PHP_SHARED_MODULE],[
