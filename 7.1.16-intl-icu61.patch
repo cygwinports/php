@@ -1,0 +1,11 @@
+--- origsrc/php-7.1.16/ext/intl/config.m4	2018-04-10 16:21:05.905561400 -0500
++++ src/php-7.1.16/ext/intl/config.m4	2018-04-10 17:10:22.423631800 -0500
+@@ -87,7 +87,7 @@ if test "$PHP_INTL" != "no"; then
+     breakiterator/codepointiterator_methods.cpp \
+     uchar/uchar.c \
+     idn/idn.c \
+-    $icu_spoof_src, $ext_shared,,$ICU_INCS -Wno-write-strings -D__STDC_LIMIT_MACROS -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1,cxx)
++    $icu_spoof_src, $ext_shared,,$ICU_INCS -DU_USING_ICU_NAMESPACE=1 -Wno-write-strings -D__STDC_LIMIT_MACROS -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1,cxx)
+   PHP_ADD_BUILD_DIR($ext_builddir/collator)
+   PHP_ADD_BUILD_DIR($ext_builddir/converter)
+   PHP_ADD_BUILD_DIR($ext_builddir/common)

@@ -1,7 +1,7 @@
 inherit httpd
 
 NAME="php"
-VERSION=7.1.13
+VERSION=7.1.16
 RELEASE=1
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
@@ -12,20 +12,20 @@ HOMEPAGE="http://www.php.net/"
 SRC_URI="http://www.php.net/distributions/php-${VERSION}.tar.xz"
 SRC_URI+=" template-builtin.reg template-ext.reg php-fpm.init"
 PATCH_URI="
-	http://pkgs.fedoraproject.org/cgit/rpms/php.git/plain/php-7.0.0-includedir.patch
-	http://pkgs.fedoraproject.org/cgit/rpms/php.git/plain/php-5.3.0-recode.patch
-	http://pkgs.fedoraproject.org/cgit/rpms/php.git/plain/php-7.0.2-libdb.patch
-	http://pkgs.fedoraproject.org/cgit/rpms/php.git/plain/php-7.1.0-systzdata-v14.patch
-	http://pkgs.fedoraproject.org/cgit/rpms/php.git/plain/php-5.6.3-ldap_r.patch
-	http://pkgs.fedoraproject.org/cgit/rpms/php.git/plain/php-5.4.0-phpize.patch
-	http://pkgs.fedoraproject.org/cgit/rpms/php.git/plain/php-7.0.0-fixheader.patch
-	http://pkgs.fedoraproject.org/cgit/rpms/php.git/plain/php-5.6.3-phpinfo.patch
-	http://pkgs.fedoraproject.org/cgit/rpms/php.git/plain/php-5.6.3-datetests.patch
+	http://src.fedoraproject.org/cgit/rpms/php.git/plain/php-7.0.0-includedir.patch
+	http://src.fedoraproject.org/cgit/rpms/php.git/plain/php-5.3.0-recode.patch
+	http://src.fedoraproject.org/cgit/rpms/php.git/plain/php-7.0.2-libdb.patch
+	http://src.fedoraproject.org/cgit/rpms/php.git/plain/php-7.1.0-systzdata-v14.patch
+	http://src.fedoraproject.org/cgit/rpms/php.git/plain/php-7.1.15-ldap_r.patch?h=f27
+	http://src.fedoraproject.org/cgit/rpms/php.git/plain/php-5.4.0-phpize.patch
+	http://src.fedoraproject.org/cgit/rpms/php.git/plain/php-5.6.3-phpinfo.patch
+	http://src.fedoraproject.org/cgit/rpms/php.git/plain/php-5.6.3-datetests.patch
 	7.0.13-cygwin-build.patch
 	7.1.12-curl-ssl.patch
 	5.3.4-dba-gdbm_compat.patch
 	5.4.10-imap-cygwin.patch
 	5.3.4-intl-libstdc.patch
+	7.1.16-intl-icu61.patch
 	5.3.4-pspell-libpspell.patch
 	5.3.10-sybase-cygwin.patch
 	5.3.6-gcc-visibility.patch
