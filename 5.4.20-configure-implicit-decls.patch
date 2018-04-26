@@ -103,8 +103,8 @@
  main()
  {
    exit(0);
---- origsrc/php-5.4.20/configure.in	2013-10-17 14:23:57.955065200 -0500
-+++ src/php-5.4.20/configure.in	2013-10-17 15:05:08.743386200 -0500
+--- origsrc/php-5.4.20/configure.ac	2013-10-17 14:23:57.955065200 -0500
++++ src/php-5.4.20/configure.ac	2013-10-17 15:05:08.743386200 -0500
 @@ -703,6 +703,8 @@ AC_CACHE_CHECK([for getaddrinfo], ac_cv_
                  [struct addrinfo *g,h;g=&h;getaddrinfo("","",g,&g);], 
    AC_TRY_RUN([

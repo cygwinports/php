@@ -9,8 +9,8 @@
    AC_MSG_RESULT(no)
  ], [
    AC_MSG_RESULT(yes)
---- origsrc/php-5.6.6/configure.in	2015-02-25 12:35:38.344517100 -0600
-+++ src/php-5.6.6/configure.in	2015-02-25 11:43:02.697048300 -0600
+--- origsrc/php-5.6.6/configure.ac	2015-02-25 12:35:38.344517100 -0600
++++ src/php-5.6.6/configure.ac	2015-02-25 11:43:02.697048300 -0600
 @@ -1414,14 +1414,8 @@ case $host_alias in
    ;;
  esac
@@ -27,4 +27,4 @@
 +AC_PROG_CXXCPP
  AC_PROG_LIBTOOL
  
- if test "$enable_debug" != "yes"; then
+ PHP_SET_LIBTOOL_VARIABLE([--silent])

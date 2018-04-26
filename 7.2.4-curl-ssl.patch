@@ -1,0 +1,22 @@
+--- origsrc/php-7.2.4/ext/curl/config.m4	2018-03-27 08:10:43.000000000 -0500
++++ src/php-7.2.4/ext/curl/config.m4	2018-04-25 14:51:38.638775400 -0500
+@@ -99,8 +99,8 @@ if test "$PHP_CURL" != "no"; then
+    
+     save_CFLAGS="$CFLAGS"
+     CFLAGS=$CURL_INCL
+-    save_LDFLAGS="$LDFLAGS"
+-    LDFLAGS=$CURL_LIBS
++    save_LIBS="$LDFLAGS"
++    LIBS=$CURL_LIBS
+    
+     AC_PROG_CPP
+     AC_MSG_CHECKING([for openssl support in libcurl])
+@@ -160,7 +160,7 @@ int main(int argc, char *argv[])
+     ])
+    
+     CFLAGS="$save_CFLAGS"
+-    LDFLAGS="$save_LDFLAGS"
++    LIBS="$save_LIBS"
+   else
+     AC_MSG_RESULT([no])
+   fi

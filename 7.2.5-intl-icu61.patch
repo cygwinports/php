@@ -1,0 +1,11 @@
+--- origsrc/php-7.2.5/ext/intl/config.m4	2018-04-24 10:09:55.000000000 -0500
++++ src/php-7.2.5/ext/intl/config.m4	2018-04-25 16:05:02.823923600 -0500
+@@ -10,7 +10,7 @@ if test "$PHP_INTL" != "no"; then
+   PHP_SUBST(INTL_SHARED_LIBADD)
+   PHP_REQUIRE_CXX()
+   PHP_ADD_LIBRARY(stdc++, 1, INTL_SHARED_LIBADD)
+-  INTL_COMMON_FLAGS="$ICU_INCS -Wno-write-strings -D__STDC_LIMIT_MACROS -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1"
++  INTL_COMMON_FLAGS="$ICU_INCS -Wno-write-strings -D_DEFAULT_SOURCE -DU_USING_ICU_NAMESPACE=1 -D__STDC_LIMIT_MACROS -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1"
+   if test "$icu_version" -ge "4002"; then
+     icu_spoof_src=" spoofchecker/spoofchecker_class.c \
+     spoofchecker/spoofchecker.c\
