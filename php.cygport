@@ -1,7 +1,7 @@
 inherit httpd
 
 NAME="php"
-VERSION=7.2.5
+VERSION=7.2.7
 RELEASE=1
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
@@ -86,6 +86,7 @@ common_args="
   --with-libedit=yes
   --enable-session=yes
   --enable-xml=yes
+  --with-password-argon2=/usr
   --with-libxml-dir=/usr
   --with-openssl-dir=/usr
   --with-pcre-dir=/usr
