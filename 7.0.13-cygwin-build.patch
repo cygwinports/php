@@ -56,7 +56,7 @@
      standard_libtool_flag='-prefer-non-pic -static'
 @@ -1305,7 +1305,7 @@ case $host_alias in
  *)
-   PHP_UNAME=`uname | xargs`
+   PHP_UNAME=`uname -a | xargs`
    AC_DEFINE_UNQUOTED(PHP_UNAME,"$PHP_UNAME",[uname -a output])
 -  PHP_OS=`uname | xargs`
 +  PHP_OS=`uname | xargs | sed -e 's/[[-_ ]].*//'`
@@ -125,6 +125,6 @@
  
 -  SAPI_FPM_PATH=sapi/fpm/php-fpm
 +  SAPI_FPM_PATH=sapi/fpm/php-fpm$EXEEXT
-   
+ 
    if test "$fpm_trace_type" && test -f "$abs_srcdir/sapi/fpm/fpm/fpm_trace_$fpm_trace_type.c"; then
      PHP_FPM_TRACE_FILES="fpm/fpm_trace.c fpm/fpm_trace_$fpm_trace_type.c"
