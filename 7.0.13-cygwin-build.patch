@@ -125,6 +125,6 @@
  
 -  SAPI_FPM_PATH=sapi/fpm/php-fpm
 +  SAPI_FPM_PATH=sapi/fpm/php-fpm$EXEEXT
-   
+ 
    if test "$fpm_trace_type" && test -f "$abs_srcdir/sapi/fpm/fpm/fpm_trace_$fpm_trace_type.c"; then
      PHP_FPM_TRACE_FILES="fpm/fpm_trace.c fpm/fpm_trace_$fpm_trace_type.c"

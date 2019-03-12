@@ -1,7 +1,7 @@
 inherit httpd
 
 NAME="php"
-VERSION=7.2.7
+VERSION=7.2.16
 RELEASE=1
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
@@ -12,15 +12,16 @@ HOMEPAGE="http://www.php.net/"
 SRC_URI="http://www.php.net/distributions/php-${VERSION}.tar.xz"
 SRC_URI+=" template-builtin.reg template-ext.reg php-fpm.init"
 PATCH_URI="
-	http://src.fedoraproject.org/cgit/rpms/php.git/plain/php-7.2.0-includedir.patch
-	http://src.fedoraproject.org/cgit/rpms/php.git/plain/php-5.3.0-recode.patch
-	http://src.fedoraproject.org/cgit/rpms/php.git/plain/php-7.2.0-libdb.patch
-	http://src.fedoraproject.org/cgit/rpms/php.git/plain/php-7.2.3-systzdata-v16.patch
-	http://src.fedoraproject.org/cgit/rpms/php.git/plain/php-7.2.3-ldap_r.patch
-	http://src.fedoraproject.org/cgit/rpms/php.git/plain/php-5.4.0-phpize.patch
-	http://src.fedoraproject.org/cgit/rpms/php.git/plain/php-5.6.3-phpinfo.patch
-	http://src.fedoraproject.org/cgit/rpms/php.git/plain/php-5.6.3-datetests.patch
-	http://src.fedoraproject.org/cgit/rpms/php.git/plain/php-7.2.4-fixheader.patch
+	fedora/php-7.2.0-includedir.patch
+	fedora/php-5.3.0-recode.patch
+	fedora/php-7.2.0-libdb.patch
+	fedora/php-7.2.16-systzdata-v17.patch
+	fedora/php-7.2.3-ldap_r.patch
+	fedora/php-5.4.0-phpize.patch
+	fedora/php-5.6.3-phpinfo.patch
+	fedora/php-5.6.3-datetests.patch
+	fedora/php-7.2.4-fixheader.patch
+	fedora/php-openssl111.patch
 	7.0.13-cygwin-build.patch
 	7.2.4-curl-ssl.patch
 	5.3.4-dba-gdbm_compat.patch
@@ -206,16 +207,16 @@ php_CONTENTS="--exclude=php-config* --exclude=phpize*
               etc/rc.d/init.d/php-fpm
               usr/bin/cygphp7-*.dll usr/bin/php*
               usr/sbin/ usr/share/doc/ usr/share/man/
-              usr/share/pear/.registry/.channel.*/filter.reg
-              usr/share/pear/.registry/.channel.*/hash.reg
-              usr/share/pear/.registry/.channel.*/pdo.reg
-              usr/share/pear/.registry/.channel.*/readline.reg
-              usr/share/pear/.registry/.channel.*/session.reg
-              usr/share/pear/doc/filter/CREDITS
-              usr/share/pear/doc/hash/CREDITS
-              usr/share/pear/doc/pdo/CREDITS
-              usr/share/pear/doc/readline/CREDITS
-              usr/share/pear/doc/session/CREDITS
+              var/lib/pear/.registry/.channel.*/filter.reg
+              var/lib/pear/.registry/.channel.*/hash.reg
+              var/lib/pear/.registry/.channel.*/pdo.reg
+              var/lib/pear/.registry/.channel.*/readline.reg
+              var/lib/pear/.registry/.channel.*/session.reg
+              usr/share/doc/pear/filter/CREDITS
+              usr/share/doc/pear/hash/CREDITS
+              usr/share/doc/pear/pdo/CREDITS
+              usr/share/doc/pear/readline/CREDITS
+              usr/share/doc/pear/session/CREDITS
               usr/share/php/
               var/lib/rebase/dynpath.d/php
 "
@@ -235,8 +236,8 @@ do
 	PKG_NAMES+=" php-${ext}"
 	declare php_${ext}_CONTENTS="${inidir#/}/${ext}.ini
 				     usr/lib/php/*/${ext}.dll
-				     usr/share/pear/doc/${ext}/
-				     usr/share/pear/.registry/.channel.*/${ext}.reg"
+				     usr/share/doc/pear/${ext}/
+				     var/lib/pear/.registry/.channel.*/${ext}.reg"
 	declare php_${ext}_SUMMARY="PHP ${ext} extension"
 done
 unset ext
@@ -361,7 +362,7 @@ src_install() {
 	local date=$(date +%F)
 	local time=$(date +%T)
 	local timestamp=$(date +%s)
-	local regdir=/usr/share/pear/.registry/.channel.pecl.php.net
+	local regdir=/var/lib/pear/.registry/.channel.pecl.php.net
 	local xdir=$(${D}/usr/bin/php-config --extension-dir)
 	local dll ext docdir path_len summary_len p
 
@@ -372,7 +373,7 @@ src_install() {
 	do
 		dll=${x##*/}
 		ext=${dll%.dll}
-		docdir=/usr/share/pear/doc/${ext}
+		docdir=/usr/share/doc/pear/${ext}
 		doc_len=$((${#docdir} + 8))	# /CREDITS
 		path_len=$((${#xdir} + ${#dll} + 1))
 		summary_len=$((${#ext} + 14))	# PHP ___ extension
@@ -412,7 +413,7 @@ src_install() {
 	# when adding, be sure to update php_CONTENTS
 	for ext in filter hash pdo readline session
 	do
-		docdir=/usr/share/pear/doc/${ext}
+		docdir=/usr/share/doc/pear/${ext}
 		doc_len=$((${#docdir} + 8))	# /CREDITS
 		summary_len=$((${#ext} + 22))	# PHP ___ builtin extension
 

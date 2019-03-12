@@ -1,0 +1,4 @@
+[submodule "fedora"]
+	path = fedora
+	url = https://src.fedoraproject.org/rpms/php.git
+	branch = f29
