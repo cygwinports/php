@@ -1,36 +1,30 @@
 https://bugs.php.net/bug.php?id=48820
 
---- origsrc/php-5.4.19/ext/posix/config.m4	2013-08-19 23:42:41.000000000 -0500
-+++ src/php-5.4.19/ext/posix/config.m4	2013-08-23 13:34:53.452433200 -0500
-@@ -13,8 +13,8 @@ if test "$PHP_POSIX" = "yes"; then
+--- origsrc/php7.3.3/ext/posix/config.m4
++++ src/php-7.3.3/ext/posix/config.m4
+@@ -13,7 +13,7 @@ if test "$PHP_POSIX" = "yes"; then
  
-   AC_CHECK_FUNCS(seteuid setegid setsid getsid setpgid getpgid ctermid mkfifo mknod getrlimit getlogin getgroups makedev initgroups getpwuid_r getgrgid_r)
+   AC_CHECK_FUNCS(seteuid setegid setsid getsid setpgid getpgid ctermid mkfifo mknod setrlimit getrlimit getlogin getgroups makedev initgroups getpwuid_r getgrgid_r)
  
 -  AC_MSG_CHECKING([for working ttyname_r() implementation])
--  AC_TRY_RUN([
 +  AC_CACHE_CHECK([for working ttyname_r() implementation], ac_cv_func_ttyname_r_works, [
-+    AC_TRY_RUN([
+   AC_RUN_IFELSE([AC_LANG_SOURCE([[
  #include <unistd.h>
  
- int main(int argc, char *argv[])
-@@ -23,15 +23,21 @@ int main(int argc, char *argv[])
- 
- 	return ttyname_r(0, buf, 64) ? 1 : 0;
+@@ -23,14 +23,20 @@ int main(int argc, char *argv[])
+ 	return !ttyname_r(0, buf, 64);
  }
--  ],[
+   ]])],[
 -    AC_MSG_RESULT([yes])
 -    AC_DEFINE(HAVE_TTYNAME_R, 1, [Whether you have a working ttyname_r])
--  ],[
++    ac_cv_func_ttyname_r_works=yes
+   ],[
 -    AC_MSG_RESULT([no, posix_ttyname() will be thread-unsafe])
--  ], [
++    ac_cv_func_ttyname_r_works=no
+   ], [
 -    AC_MSG_RESULT([no, cannot detect working ttyname_r() when cross compiling. posix_ttyname() will be thread-unsafe])
-+    ],[
-+      ac_cv_func_ttyname_r_works=yes
-+    ],[
-+      ac_cv_func_ttyname_r_works=no
-+    ], [
-+      ac_cv_func_ttyname_r_works=no
-+    ])
++    ac_cv_func_ttyname_r_works=no
++  ])
    ])
  
 +  if test "$ac_cv_func_ttyname_r_works" = yes; then
@@ -40,5 +34,5 @@ https://bugs.php.net/bug.php?id=48820
 +  fi
 +
    AC_CACHE_CHECK([for utsname.domainname], ac_cv_have_utsname_domainname, [
-     AC_TRY_COMPILE([
+     AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
        #define _GNU_SOURCE

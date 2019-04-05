@@ -2,8 +2,8 @@
 +++ src/php-7.0.17/php.ini-production	2017-03-16 11:18:06.913010400 -0500
 @@ -985,7 +985,7 @@ cli_server.color = On
  
- ;Enables or disables JIT compilation of patterns. This requires the PCRE
- ;library to be compiled with JIT support.
+ ; Enables or disables JIT compilation of patterns. This requires the PCRE
+ ; library to be compiled with JIT support.
 -;pcre.jit=1
 +pcre.jit=0
  

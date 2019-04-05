@@ -1,7 +1,7 @@
 inherit httpd
 
 NAME="php"
-VERSION=7.2.16
+VERSION=7.3.3
 RELEASE=1
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
@@ -15,9 +15,9 @@ PATCH_URI="
 	fedora/php-7.2.0-includedir.patch
 	fedora/php-5.3.0-recode.patch
 	fedora/php-7.2.0-libdb.patch
-	fedora/php-7.2.16-systzdata-v17.patch
+	fedora/php-7.3.3-systzdata-v18.patch
 	fedora/php-7.2.3-ldap_r.patch
-	fedora/php-5.4.0-phpize.patch
+	fedora/php-7.3.0-phpize.patch
 	fedora/php-5.6.3-phpinfo.patch
 	fedora/php-5.6.3-datetests.patch
 	fedora/php-7.2.4-fixheader.patch
@@ -31,8 +31,8 @@ PATCH_URI="
 	7.2.5-mbstring-onig.patch
 	5.3.4-pspell-libpspell.patch
 	5.3.10-sybase-cygwin.patch
-	5.4.19-posix-ttyname_r.patch
-	5.4.20-configure-implicit-decls.patch
+	7.3.3-posix-ttyname_r.patch
+	7.3.3-configure-implicit-decls.patch
 	5.4.20-libmbfl-implicit-decls.patch
 	5.6.6-fix-libtoolize.patch
 	5.6.9-apache2handler-zts.patch

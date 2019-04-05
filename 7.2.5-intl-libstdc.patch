@@ -5,6 +5,6 @@
    PHP_SUBST(INTL_SHARED_LIBADD)
    PHP_REQUIRE_CXX()
 +  PHP_ADD_LIBRARY(stdc++, 1, INTL_SHARED_LIBADD)
-   INTL_COMMON_FLAGS="$ICU_INCS -Wno-write-strings -D__STDC_LIMIT_MACROS -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1"
+   INTL_COMMON_FLAGS="$ICU_INCS $ICU_CFLAGS -Wno-write-strings -D__STDC_LIMIT_MACROS -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1"
    if test "$icu_version" -ge "4002"; then
      icu_spoof_src=" spoofchecker/spoofchecker_class.c \
