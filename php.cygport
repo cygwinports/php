@@ -1,7 +1,7 @@
 inherit httpd
 
 NAME="php"
-VERSION=7.3.3
+VERSION=7.3.4
 RELEASE=1
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
@@ -21,7 +21,7 @@ PATCH_URI="
 	fedora/php-5.6.3-phpinfo.patch
 	fedora/php-5.6.3-datetests.patch
 	fedora/php-7.2.4-fixheader.patch
-	fedora/php-openssl111.patch
+	fedora/php-upstream.patch
 	7.0.13-cygwin-build.patch
 	7.2.4-curl-ssl.patch
 	5.3.4-dba-gdbm_compat.patch
@@ -128,7 +128,7 @@ cli_args="
   --with-gmp=shared,/usr
   --with-iconv=shared,/usr
   --with-imap=shared,/usr
-  --with-kerberos=no
+  --with-kerberos=yes
   --with-imap-ssl=yes
   --with-interbase=no
   --enable-json=shared
@@ -201,30 +201,47 @@ PKG_NAMES="${NAME} ${NAME}-devel httpd-mod_php${VERSION%%.*}"
 php_CATEGORY="Interpreters PHP"
 # previously shared extensions moved into core, or obsolete
 php_OBSOLETES="php-mcrypt php-readline php-session"
-php_CONTENTS="--exclude=php-config* --exclude=phpize*
-              --exclude=${inidir#/}/*.ini
-              etc/defaults/ ${inidir#/} etc/p*/php.sh
-              etc/rc.d/init.d/php-fpm
-              usr/bin/cygphp7-*.dll usr/bin/php*
-              usr/sbin/ usr/share/doc/ usr/share/man/
-              var/lib/pear/.registry/.channel.*/filter.reg
-              var/lib/pear/.registry/.channel.*/hash.reg
-              var/lib/pear/.registry/.channel.*/pdo.reg
-              var/lib/pear/.registry/.channel.*/readline.reg
-              var/lib/pear/.registry/.channel.*/session.reg
-              usr/share/doc/pear/filter/CREDITS
-              usr/share/doc/pear/hash/CREDITS
-              usr/share/doc/pear/pdo/CREDITS
-              usr/share/doc/pear/readline/CREDITS
-              usr/share/doc/pear/session/CREDITS
-              usr/share/php/
-              var/lib/rebase/dynpath.d/php
+php_CONTENTS="
+	--exclude=${inidir#/}/*.ini
+	etc/defaults${HTTPD_SYSCONFDIR}/php7.conf
+	etc/defaults/etc/php*
+	${inidir#/}
+	etc/p*/php.sh
+	etc/rc.d/init.d/php-fpm
+	usr/bin/cygphp7-*.dll
+	usr/bin/php.exe
+	usr/bin/php-cgi.exe
+	usr/bin/phpdbg.exe
+	usr/sbin/php-fpm.exe
+	usr/share/doc/php/
+	usr/share/man/man1/php.1*
+	usr/share/man/man1/php-cgi.1*
+	usr/share/man/man1/phpdbg.1*
+	usr/share/man/man8/php-fpm.8*
+	usr/share/php/
+	usr/share/doc/pear/filter/CREDITS
+	usr/share/doc/pear/hash/CREDITS
+	usr/share/doc/pear/pdo/CREDITS
+	usr/share/doc/pear/readline/CREDITS
+	usr/share/doc/pear/session/CREDITS
+	var/lib/pear/.registry/.channel.*/filter.reg
+	var/lib/pear/.registry/.channel.*/hash.reg
+	var/lib/pear/.registry/.channel.*/pdo.reg
+	var/lib/pear/.registry/.channel.*/readline.reg
+	var/lib/pear/.registry/.channel.*/session.reg
+	var/lib/rebase/dynpath.d/php
 "
 php_devel_CATEGORY=${php_CATEGORY}
 php_devel_REQUIRES="autoconf gcc-core make"
-php_devel_CONTENTS="usr/bin/php-config usr/bin/phpize usr/include/
-	usr/lib/lib* usr/lib/php/build/
-	usr/share/man/man1/php-config.* usr/share/man/man1/phpize.*"
+php_devel_CONTENTS="
+	usr/bin/php-config
+	usr/bin/phpize
+	usr/include/php/
+	usr/lib/libphp7.dll.a
+	usr/lib/php/build/
+	usr/share/man/man1/php-config.*
+	usr/share/man/man1/phpize.*
+"
 httpd_mod_php7_OBSOLETES="httpd-mod_php5"
 httpd_mod_php7_CONTENTS="${HTTPD_SYSCONFMODULESDIR#/} ${HTTPD_LIBEXECDIR#/}"
 httpd_mod_php7_SUMMARY="Embedded PHP for Apache HTTP Server"
@@ -241,7 +258,7 @@ do
 	declare php_${ext}_SUMMARY="PHP ${ext} extension"
 done
 unset ext
-php_phar_CONTENTS+=" usr/bin/phar*"
+php_phar_CONTENTS+=" usr/bin/phar* usr/share/man/man1/phar*"
 # obsoleted by php7
 php_debuginfo_OBSOLETES="php-jsonc-debuginfo"
 php_json_OBSOLETES="php-jsonc"
@@ -282,14 +299,14 @@ src_compile() {
 	# first make the common sources library
 	# enabling zip with system libzip somehow clobbers -lpcre
 	cygmake libphp${VERSION%%.*}.la \
-		EXTRA_LDFLAGS="-release ${VERSION%.*} -avoid-version -module -no-undefined -lpcre"
+		EXTRA_LDFLAGS="-release ${VERSION%.*} -avoid-version -module -no-undefined -lpcre2-8"
 
 	sed -e 's#link=yes#link=no#' -i libphp${VERSION%%.*}.la
 
 	# then make everything else
 	# c-client is static only so we need to circumvent libtool to link
 	cygmake -j1 \
-		IMAP_SHARED_LIBADD='-Wl,/usr/lib/c-client.a,-lssl,-lcrypto' \
+		IMAP_SHARED_LIBADD='-Wl,-lc-client,-lssl,-lcrypto,-lgssapi_krb5,-lkrb5' \
 		PHP_GLOBAL_OBJS='' \
 		ZEND_EXTRA_LIBS="${B}/embed/libphp${VERSION%%.*}.la"
 
