@@ -1,7 +1,7 @@
 inherit httpd
 
 NAME="php"
-VERSION=7.3.4
+VERSION=7.3.7
 RELEASE=1
 CATEGORY="PHP"
 SUMMARY="PHP Hypertext Preprocessor"
@@ -21,7 +21,6 @@ PATCH_URI="
 	fedora/php-5.6.3-phpinfo.patch
 	fedora/php-5.6.3-datetests.patch
 	fedora/php-7.2.4-fixheader.patch
-	fedora/php-upstream.patch
 	7.0.13-cygwin-build.patch
 	7.2.4-curl-ssl.patch
 	5.3.4-dba-gdbm_compat.patch

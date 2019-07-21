@@ -1,6 +1,17 @@
 --- origsrc/php-5.3.4/ext/dba/config.m4	2010-12-01 13:20:16.000000000 -0600
 +++ src/php-5.3.4/ext/dba/config.m4	2010-12-29 23:23:12.000000000 -0600
-@@ -175,7 +175,7 @@ if test "$PHP_NDBM" != "no"; then
+@@ -172,6 +172,10 @@ if test "$PHP_NDBM" != "no"; then
+       THIS_PREFIX=$i
+       THIS_INCLUDE=$i/include/ndbm.h
+       break
++    elif test -f "$i/include/gdbm/ndbm.h"; then
++      THIS_PREFIX=$i
++      THIS_INCLUDE=$i/include/gdbm/ndbm.h
++      break
+     elif test -f "$i/include/db1/ndbm.h"; then
+       THIS_PREFIX=$i
+       THIS_INCLUDE=$i/include/db1/ndbm.h
+@@ -195,7 +195,7 @@ if test "$PHP_NDBM" != "no"; then
    done
    
    if test -n "$THIS_INCLUDE"; then
